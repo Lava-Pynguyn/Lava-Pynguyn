@@ -1,5 +1,4 @@
 
-html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -337,3 +336,537 @@ loop();
 
 </body>
 </html>
+```
+
+# INDEX COMPLETO — Lava Pynguyn (VERSIÓN ARREGLADA)
+
+IMPORTANTE:
+
+Si el archivo se veía de solo ~30 líneas:
+
+* probablemente copiaste incompleto
+* GitHub truncó vista previa
+* o pegaste mal el bloque
+
+Esta versión debe quedar de MUCHAS líneas.
+
+Reemplaza TODO tu `index.html` por esto.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lava Pynguyn</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+overflow:hidden;
+background:black;
+}
+
+canvas{
+display:block;
+background:#140000;
+}
+
+#menu,
+#playMenu{
+position:absolute;
+inset:0;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:linear-gradient(#150000,#2a0000);
+color:white;
+z-index:20;
+}
+
+#playMenu{
+display:none;
+}
+
+.title{
+font-size:80px;
+color:#ff7b00;
+margin-bottom:20px;
+text-shadow:0 0 30px red;
+}
+
+.subtitle{
+margin-bottom:25px;
+font-size:22px;
+opacity:.9;
+}
+
+input{
+width:300px;
+padding:15px;
+margin:10px;
+border:none;
+border-radius:15px;
+font-size:18px;
+}
+
+button{
+padding:15px 30px;
+margin:10px;
+font-size:22px;
+border:none;
+border-radius:18px;
+background:#ff7b00;
+color:white;
+cursor:pointer;
+transition:.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+#ui{
+position:absolute;
+top:10px;
+left:10px;
+color:white;
+z-index:10;
+}
+
+#slipBar{
+width:220px;
+height:20px;
+background:#333;
+border-radius:20px;
+overflow:hidden;
+margin-top:10px;
+}
+
+#slipFill{
+width:0%;
+height:100%;
+background:orange;
+}
+
+#coins{
+margin-top:10px;
+font-size:22px;
+}
+
+#alert{
+position:absolute;
+width:100%;
+top:35%;
+text-align:center;
+font-size:70px;
+font-weight:bold;
+color:red;
+display:none;
+text-shadow:0 0 20px black;
+z-index:15;
+}
+</style>
+</head>
+<body>
+
+<div id="menu">
+<div class="title">LAVA PYNGUYN</div>
+<div class="subtitle">Escapa de los pingüinos de lava</div>
+
+<input id="name" placeholder="nombre">
+<input id="email" placeholder="correo">
+<input id="password" type="password" placeholder="contraseña">
+
+<button onclick="register()">CREAR CUENTA</button>
+<button onclick="login()">INICIAR SESIÓN</button>
+</div>
+
+<div id="playMenu">
+<div class="title">JUGAR</div>
+<button onclick="startPublic()">PARTIDA PÚBLICA</button>
+<button onclick="startPrivate()">PARTIDA PRIVADA</button>
+</div>
+
+<div id="ui">
+<div>SHIFT = correr</div>
+<div id="slipBar">
+<div id="slipFill"></div>
+</div>
+<div id="coins">🪙 0</div>
+</div>
+
+<div id="alert">🚨 ALERTA 🚨</div>
+
+<canvas id="game"></canvas>
+
+<script type="module">
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword
+}
+from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBy1mulELJTWX0AF-ludd-KCvNysc46miA",
+  authDomain: "lava-pynguyn.firebaseapp.com",
+  projectId: "lava-pynguyn",
+  storageBucket: "lava-pynguyn.firebasestorage.app",
+  messagingSenderId: "642131777706",
+  appId: "1:642131777706:web:1b4f6c8a47bb184c8e98d3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.register = async function(){
+
+const email=document.getElementById('email').value;
+const password=document.getElementById('password').value;
+
+try{
+await createUserWithEmailAndPassword(auth,email,password);
+alert('Cuenta creada');
+}catch(err){
+alert(err.message);
+}
+
+}
+
+window.login = async function(){
+
+const email=document.getElementById('email').value;
+const password=document.getElementById('password').value;
+
+try{
+await signInWithEmailAndPassword(auth,email,password);
+
+document.getElementById('menu').style.display='none';
+document.getElementById('playMenu').style.display='flex';
+
+}catch(err){
+alert(err.message);
+}
+
+}
+
+const canvas=document.getElementById('game');
+const ctx=canvas.getContext('2d');
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let gameStarted=false;
+let privateMode=false;
+
+window.startPublic=function(){
+privateMode=false;
+startGame();
+}
+
+window.startPrivate=function(){
+privateMode=true;
+alert('Modo privado: mínimo 3 jugadores');
+startGame();
+}
+
+function startGame(){
+gameStarted=true;
+document.getElementById('playMenu').style.display='none';
+}
+
+const player={
+name:'',
+x:0,
+worldY:0,
+velocityX:0,
+velocityY:0,
+slip:0,
+coins:0,
+lava:false
+};
+
+const keys={};
+
+window.addEventListener('keydown',e=>{
+keys[e.key.toLowerCase()]=true;
+});
+
+window.addEventListener('keyup',e=>{
+keys[e.key.toLowerCase()]=false;
+});
+
+const pathWidth=220;
+
+const lavaPenguins=[];
+
+for(let i=0;i<8;i++){
+lavaPenguins.push({
+angle:Math.random()*Math.PI*2,
+distance:180+Math.random()*50,
+y:Math.random()*8000,
+speed:0.01+Math.random()*0.02,
+attack:0
+});
+}
+
+const coins=[];
+
+for(let i=0;i<50;i++){
+coins.push({
+x:(Math.random()-0.5)*120,
+y:-i*300,
+taken:false
+});
+}
+
+let train={
+active:false,
+y:2000
+};
+
+setInterval(()=>{
+if(gameStarted&&!train.active){
+train.active=true;
+train.y=player.worldY+1800;
+
+document.getElementById('alert').style.display='block';
+
+setTimeout(()=>{
+document.getElementById('alert').style.display='none';
+},2000);
+}
+},15000);
+
+function update(){
+
+if(!gameStarted)return;
+
+player.name=document.getElementById('name').value||'Player';
+
+let accel=0.4;
+let maxSpeed=5;
+
+if(keys['shift']){
+maxSpeed=9;
+player.slip+=0.5;
+}else{
+player.slip-=0.3;
+}
+
+player.slip=Math.max(0,Math.min(100,player.slip));
+
+document.getElementById('slipFill').style.width=player.slip+'%';
+
+if(keys['a'])player.velocityX-=accel;
+if(keys['d'])player.velocityX+=accel;
+if(keys['w'])player.velocityY-=accel;
+if(keys['s'])player.velocityY+=accel;
+
+player.velocityX*=0.92;
+player.velocityY*=0.92;
+
+player.velocityX=Math.max(-maxSpeed,Math.min(maxSpeed,player.velocityX));
+player.velocityY=Math.max(-maxSpeed,Math.min(maxSpeed,player.velocityY));
+
+player.x+=player.velocityX;
+player.worldY+=player.velocityY;
+
+if(player.slip>=100){
+player.x+=(Math.random()-0.5)*20;
+}
+
+if(player.x<-pathWidth/2||player.x>pathWidth/2){
+player.lava=true;
+}
+
+lavaPenguins.forEach(lp=>{
+
+lp.angle+=lp.speed;
+
+const targetX=Math.sin(lp.angle)*lp.distance;
+
+const dx=player.x-targetX;
+
+if(Math.abs(dx)<70&&Math.random()<0.01){
+lp.attack=20;
+player.x+=dx>0?35:-35;
+}
+
+if(lp.attack>0){
+lp.attack--;
+}
+
+});
+
+coins.forEach(c=>{
+if(c.taken)return;
+
+const dx=player.x-c.x;
+const dy=player.worldY-c.y;
+
+if(Math.abs(dx)<25&&Math.abs(dy)<25){
+c.taken=true;
+player.coins++;
+document.getElementById('coins').innerHTML='🪙 '+player.coins;
+}
+});
+
+if(train.active){
+train.y-=12;
+
+if(train.y<player.worldY+150&&train.y>player.worldY-150){
+player.lava=true;
+}
+
+if(train.y<player.worldY-3000){
+train.active=false;
+}
+}
+
+}
+
+function drawPenguin(x,y,lava=false){
+
+ctx.save();
+
+ctx.translate(x,y);
+
+ctx.fillStyle=lava?'#ff3c00':'white';
+
+ctx.beginPath();
+ctx.ellipse(0,0,18,24,0,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle='black';
+ctx.beginPath();
+ctx.arc(-5,-5,2,0,Math.PI*2);
+ctx.arc(5,-5,2,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle='orange';
+ctx.beginPath();
+ctx.moveTo(0,2);
+ctx.lineTo(-4,7);
+ctx.lineTo(4,7);
+ctx.fill();
+
+ctx.restore();
+}
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+const gradient=ctx.createLinearGradient(0,0,0,canvas.height);
+gradient.addColorStop(0,'#ff5a00');
+gradient.addColorStop(1,'#661100');
+ctx.fillStyle=gradient;
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+const centerX=canvas.width/2;
+
+ctx.fillStyle='#4a2d16';
+ctx.beginPath();
+ctx.moveTo(centerX-pathWidth/2,0);
+ctx.lineTo(centerX+pathWidth/2,0);
+ctx.lineTo(centerX+pathWidth/2+140,canvas.height);
+ctx.lineTo(centerX-pathWidth/2-140,canvas.height);
+ctx.fill();
+
+for(let i=0;i<60;i++){
+ctx.fillStyle='rgba(0,0,0,0.08)';
+ctx.fillRect(centerX-100+Math.sin(i)*30,i*40,200,18);
+}
+
+coins.forEach(c=>{
+if(c.taken)return;
+
+const sy=c.y-player.worldY+canvas.height/2;
+
+if(sy<-50||sy>canvas.height+50)return;
+
+ctx.fillStyle='gold';
+ctx.beginPath();
+ctx.arc(centerX+c.x,sy,10,0,Math.PI*2);
+ctx.fill();
+});
+
+lavaPenguins.forEach(lp=>{
+
+const sy=lp.y-player.worldY+canvas.height/2;
+
+if(sy<-100||sy>canvas.height+100)return;
+
+let px=centerX+Math.sin(lp.angle)*lp.distance;
+
+if(lp.attack>0){
+px+=(player.x-px)*0.1;
+}
+
+ctx.fillStyle='rgba(255,80,0,0.4)';
+ctx.beginPath();
+ctx.arc(px,sy+15,35,0,Math.PI*2);
+ctx.fill();
+
+drawPenguin(px,sy,true);
+});
+
+if(train.active){
+const ty=train.y-player.worldY+canvas.height/2;
+
+ctx.fillStyle='gray';
+ctx.fillRect(centerX-150,ty,300,240);
+
+ctx.fillStyle='yellow';
+ctx.fillRect(centerX-100,ty+50,50,50);
+ctx.fillRect(centerX+50,ty+50,50,50);
+}
+
+const py=canvas.height-180;
+
+ctx.fillStyle='white';
+ctx.font='20px Arial';
+ctx.fillText(player.name,centerX+player.x-20,py-35);
+
+drawPenguin(centerX+player.x,py,player.lava);
+
+ctx.fillStyle='#00aa66';
+ctx.fillRect(centerX-250,-40,500,90);
+
+ctx.fillStyle='white';
+ctx.font='30px Arial';
+ctx.fillText('SAFE ZONE',centerX-90,35);
+
+if(player.lava){
+ctx.fillStyle='white';
+ctx.font='60px Arial';
+ctx.fillText('TE VOLVISTE PINGÜINO DE LAVA',100,canvas.height/2);
+}
+
+}
+
+function loop(){
+update();
+draw();
+requestAnimationFrame(loop);
+}
+
+loop();
+
+</script>
+
+</body>
+</html>
+
