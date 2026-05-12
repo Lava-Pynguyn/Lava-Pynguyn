@@ -338,19 +338,13 @@ loop();
 </html>
 ```
 
-# INDEX COMPLETO — Lava Pynguyn (VERSIÓN ARREGLADA)
+# Lava Pynguyn — FULL INDEX.html
 
-IMPORTANTE:
+Copia TODO esto en un único archivo llamado:
 
-Si el archivo se veía de solo ~30 líneas:
-
-* probablemente copiaste incompleto
-* GitHub truncó vista previa
-* o pegaste mal el bloque
-
-Esta versión debe quedar de MUCHAS líneas.
-
-Reemplaza TODO tu `index.html` por esto.
+```txt
+index.html
+```
 
 ```html
 <!DOCTYPE html>
@@ -370,59 +364,58 @@ font-family:Arial,sans-serif;
 
 body{
 overflow:hidden;
-background:black;
+background:#120000;
+color:white;
 }
 
 canvas{
 display:block;
-background:#140000;
+background:#1a0000;
 }
 
-#menu,
-#playMenu{
+.screen{
 position:absolute;
 inset:0;
 display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-background:linear-gradient(#150000,#2a0000);
-color:white;
+background:linear-gradient(#120000,#300000);
 z-index:20;
 }
 
-#playMenu{
+.hidden{
 display:none;
 }
 
 .title{
-font-size:80px;
+font-size:72px;
 color:#ff7b00;
+text-shadow:0 0 25px red;
 margin-bottom:20px;
-text-shadow:0 0 30px red;
 }
 
 .subtitle{
-margin-bottom:25px;
+margin-bottom:20px;
 font-size:22px;
-opacity:.9;
+opacity:.8;
 }
 
 input{
-width:300px;
-padding:15px;
-margin:10px;
+width:320px;
+padding:14px;
+margin:8px;
 border:none;
-border-radius:15px;
+border-radius:14px;
 font-size:18px;
 }
 
 button{
-padding:15px 30px;
+padding:14px 28px;
 margin:10px;
-font-size:22px;
+font-size:20px;
 border:none;
-border-radius:18px;
+border-radius:16px;
 background:#ff7b00;
 color:white;
 cursor:pointer;
@@ -433,17 +426,21 @@ button:hover{
 transform:scale(1.05);
 }
 
-#ui{
+.disabled{
+background:#555 !important;
+cursor:not-allowed;
+}
+
+#topUI{
 position:absolute;
 top:10px;
 left:10px;
-color:white;
-z-index:10;
+z-index:5;
 }
 
 #slipBar{
-width:220px;
-height:20px;
+width:240px;
+height:22px;
 background:#333;
 border-radius:20px;
 overflow:hidden;
@@ -451,14 +448,19 @@ margin-top:10px;
 }
 
 #slipFill{
-width:0%;
 height:100%;
+width:0%;
 background:orange;
 }
 
-#coins{
+#timer{
+font-size:30px;
 margin-top:10px;
-font-size:22px;
+}
+
+#coins{
+font-size:24px;
+margin-top:8px;
 }
 
 #alert{
@@ -469,17 +471,33 @@ text-align:center;
 font-size:70px;
 font-weight:bold;
 color:red;
-display:none;
 text-shadow:0 0 20px black;
-z-index:15;
+display:none;
+z-index:10;
+}
+
+#lobbyPlayers{
+margin-top:20px;
+font-size:22px;
+}
+
+.code{
+font-size:50px;
+color:gold;
+margin:20px;
+}
+
+.playerName{
+font-size:18px;
+margin:4px;
 }
 </style>
 </head>
 <body>
 
-<div id="menu">
+<div id="authScreen" class="screen">
 <div class="title">LAVA PYNGUYN</div>
-<div class="subtitle">Escapa de los pingüinos de lava</div>
+<div class="subtitle">Escapa del tren y de los pingüinos de lava</div>
 
 <input id="name" placeholder="nombre">
 <input id="email" placeholder="correo">
@@ -489,18 +507,42 @@ z-index:15;
 <button onclick="login()">INICIAR SESIÓN</button>
 </div>
 
-<div id="playMenu">
+<div id="menuScreen" class="screen hidden">
 <div class="title">JUGAR</div>
-<button onclick="startPublic()">PARTIDA PÚBLICA</button>
-<button onclick="startPrivate()">PARTIDA PRIVADA</button>
+<button onclick="openPublic()">PARTIDA PÚBLICA</button>
+<button onclick="openPrivate()">PARTIDA PRIVADA</button>
 </div>
 
-<div id="ui">
-<div>SHIFT = correr</div>
+<div id="publicScreen" class="screen hidden">
+<div class="title">BUSCANDO PARTIDA</div>
+<div id="publicCount">1/5</div>
+</div>
+
+<div id="privateScreen" class="screen hidden">
+<div class="title">PARTIDA PRIVADA</div>
+<button onclick="createRoom()">CREAR PARTIDA</button>
+<input id="roomInput" placeholder="código">
+<button onclick="joinRoom()">UNIRSE</button>
+</div>
+
+<div id="roomScreen" class="screen hidden">
+<div class="title">SALA PRIVADA</div>
+<div class="code" id="roomCode">AAAAA</div>
+<div id="lobbyPlayers"></div>
+<button id="startBtn" class="disabled">MÍNIMO 3 JUGADORES</button>
+</div>
+
+<div id="voteScreen" class="screen hidden">
+<div class="title">VOTAR PINGÜINO DE LAVA</div>
+<div id="votePlayers"></div>
+</div>
+
+<div id="topUI" class="hidden">
+<div id="timer">2:30</div>
+<div id="coins">🧊 0</div>
 <div id="slipBar">
 <div id="slipFill"></div>
 </div>
-<div id="coins">🪙 0</div>
 </div>
 
 <div id="alert">🚨 ALERTA 🚨</div>
@@ -515,358 +557,473 @@ import {
 getAuth,
 createUserWithEmailAndPassword,
 signInWithEmailAndPassword
-}
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'
+
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc,
+updateDoc,
+onSnapshot,
+increment,
+collection,
+addDoc,
+getDocs,
+serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBy1mulELJTWX0AF-ludd-KCvNysc46miA",
-  authDomain: "lava-pynguyn.firebaseapp.com",
-  projectId: "lava-pynguyn",
-  storageBucket: "lava-pynguyn.firebasestorage.app",
-  messagingSenderId: "642131777706",
-  appId: "1:642131777706:web:1b4f6c8a47bb184c8e98d3"
+apiKey: "AIzaSyBy1mulELJTWX0AF-ludd-KCvNysc46miA",
+authDomain: "lava-pynguyn.firebaseapp.com",
+projectId: "lava-pynguyn",
+storageBucket: "lava-pynguyn.firebasestorage.app",
+messagingSenderId: "642131777706",
+appId: "1:642131777706:web:1b4f6c8a47bb184c8e98d3"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app=initializeApp(firebaseConfig)
+const auth=getAuth(app)
+const db=getFirestore(app)
 
-window.register = async function(){
+const canvas=document.getElementById('game')
+const ctx=canvas.getContext('2d')
+canvas.width=innerWidth
+canvas.height=innerHeight
 
-const email=document.getElementById('email').value;
-const password=document.getElementById('password').value;
-
-try{
-await createUserWithEmailAndPassword(auth,email,password);
-alert('Cuenta creada');
-}catch(err){
-alert(err.message);
+const screens={
+auth:document.getElementById('authScreen'),
+menu:document.getElementById('menuScreen'),
+public:document.getElementById('publicScreen'),
+private:document.getElementById('privateScreen'),
+room:document.getElementById('roomScreen'),
+vote:document.getElementById('voteScreen')
 }
 
+function show(name){
+Object.values(screens).forEach(s=>s.classList.add('hidden'))
+screens[name].classList.remove('hidden')
 }
 
-window.login = async function(){
-
-const email=document.getElementById('email').value;
-const password=document.getElementById('password').value;
-
-try{
-await signInWithEmailAndPassword(auth,email,password);
-
-document.getElementById('menu').style.display='none';
-document.getElementById('playMenu').style.display='flex';
-
-}catch(err){
-alert(err.message);
-}
-
-}
-
-const canvas=document.getElementById('game');
-const ctx=canvas.getContext('2d');
-
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let gameStarted=false;
-let privateMode=false;
-
-window.startPublic=function(){
-privateMode=false;
-startGame();
-}
-
-window.startPrivate=function(){
-privateMode=true;
-alert('Modo privado: mínimo 3 jugadores');
-startGame();
-}
-
-function startGame(){
-gameStarted=true;
-document.getElementById('playMenu').style.display='none';
-}
+let currentUser=null
+let roomId=''
+let gameStarted=false
+let publicPlayers=1
+let timer=150
 
 const player={
 name:'',
 x:0,
-worldY:0,
-velocityX:0,
-velocityY:0,
+y:0,
+vx:0,
+vy:0,
 slip:0,
-coins:0,
-lava:false
-};
+lava:false,
+coins:0
+}
 
-const keys={};
+const keys={}
+addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true)
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false)
 
-window.addEventListener('keydown',e=>{
-keys[e.key.toLowerCase()]=true;
-});
+window.register=async()=>{
+const email=emailInput.value
+const password=passwordInput.value
+const name=nameInput.value
 
-window.addEventListener('keyup',e=>{
-keys[e.key.toLowerCase()]=false;
-});
+try{
+const cred=await createUserWithEmailAndPassword(auth,email,password)
 
-const pathWidth=220;
+await setDoc(doc(db,'users',cred.user.uid),{
+name,
+magma:0,
+wins:0,
+created:Date.now()
+})
 
-const lavaPenguins=[];
+alert('Cuenta creada')
+}catch(err){
+alert(err.message)
+}
+}
 
-for(let i=0;i<8;i++){
+window.login=async()=>{
+const email=emailInput.value
+const password=passwordInput.value
+
+try{
+const cred=await signInWithEmailAndPassword(auth,email,password)
+currentUser=cred.user
+player.name=nameInput.value||'Player'
+show('menu')
+}catch(err){
+alert(err.message)
+}
+}
+
+window.openPublic=async()=>{
+show('public')
+
+publicPlayers=Math.floor(Math.random()*5)+1
+
+document.getElementById('publicCount').innerHTML=publicPlayers+'/5'
+
+const q=await getDocs(collection(db,'queue'))
+
+await addDoc(collection(db,'queue'),{
+name:player.name,
+time:serverTimestamp()
+})
+
+setTimeout(()=>{
+startGame()
+},4000)
+}
+
+window.openPrivate=()=>{
+show('private')
+}
+
+function randomCode(){
+const chars='ABCDEFGHJKLMNPQRSTUVWXYZ123456789'
+let code=''
+for(let i=0;i<5;i++){
+code+=chars[Math.floor(Math.random()*chars.length)]
+}
+return code
+}
+
+window.createRoom=async()=>{
+roomId=randomCode()
+
+await setDoc(doc(db,'rooms',roomId),{
+players:[player.name],
+started:false,
+host:player.name
+})
+
+openRoom()
+}
+
+window.joinRoom=async()=>{
+roomId=document.getElementById('roomInput').value.toUpperCase()
+
+const roomRef=doc(db,'rooms',roomId)
+const roomSnap=await getDoc(roomRef)
+
+if(!roomSnap.exists()){
+alert('Sala no encontrada')
+return
+}
+
+const data=roomSnap.data()
+
+if(!data.players.includes(player.name)){
+data.players.push(player.name)
+}
+
+await updateDoc(roomRef,{players:data.players})
+
+openRoom()
+}
+
+async function openRoom(){
+show('room')
+
+document.getElementById('roomCode').innerHTML=roomId
+
+const roomRef=doc(db,'rooms',roomId)
+
+onSnapshot(roomRef,snap=>{
+const data=snap.data()
+
+let html=''
+
+data.players.forEach(p=>{
+html+=`<div class="playerName">🐧 ${p}</div>`
+})
+
+html+=`<br>${data.players.length}/5`
+
+lobbyPlayers.innerHTML=html
+
+const btn=document.getElementById('startBtn')
+
+if(data.players.length>=3){
+btn.classList.remove('disabled')
+btn.innerHTML='JUGAR'
+btn.onclick=()=>startVote(data.players)
+}else{
+btn.classList.add('disabled')
+btn.innerHTML='MÍNIMO 3 JUGADORES'
+btn.onclick=null
+}
+})
+}
+
+function startVote(players){
+show('vote')
+
+let html=''
+
+players.forEach(p=>{
+html+=`<button onclick="vote('${p}')">${p}</button>`
+})
+
+votePlayers.innerHTML=html
+
+window.vote=(p)=>{
+localStorage.setItem('vote',p)
+alert('Votaste por '+p)
+}
+
+setTimeout(()=>{
+const selected=players[Math.floor(Math.random()*players.length)]
+alert(selected+' ES EL PINGÜINO DE LAVA')
+startGame()
+},5000)
+}
+
+function startGame(){
+gameStarted=true
+Object.values(screens).forEach(s=>s.classList.add('hidden'))
+document.getElementById('topUI').classList.remove('hidden')
+}
+
+const pathWidth=240
+
+const lavaPenguins=[]
+for(let i=0;i<12;i++){
 lavaPenguins.push({
-angle:Math.random()*Math.PI*2,
-distance:180+Math.random()*50,
-y:Math.random()*8000,
-speed:0.01+Math.random()*0.02,
+angle:Math.random()*6.28,
+distance:180+Math.random()*80,
+y:Math.random()*10000,
+speed:0.01+Math.random()*0.03,
 attack:0
-});
+})
 }
 
-const coins=[];
-
-for(let i=0;i<50;i++){
-coins.push({
+const magma=[]
+for(let i=0;i<100;i++){
+magma.push({
 x:(Math.random()-0.5)*120,
-y:-i*300,
+y:-i*250,
 taken:false
-});
+})
 }
 
-let train={
-active:false,
-y:2000
-};
+let train={active:false,y:2000}
 
 setInterval(()=>{
 if(gameStarted&&!train.active){
-train.active=true;
-train.y=player.worldY+1800;
-
-document.getElementById('alert').style.display='block';
-
-setTimeout(()=>{
-document.getElementById('alert').style.display='none';
-},2000);
+train.active=true
+train.y=player.y+1800
+alertBox.style.display='block'
+setTimeout(()=>alertBox.style.display='none',2000)
 }
-},15000);
+},15000)
 
 function update(){
+if(!gameStarted)return
 
-if(!gameStarted)return;
-
-player.name=document.getElementById('name').value||'Player';
-
-let accel=0.4;
-let maxSpeed=5;
+let accel=0.45
+let max=5
 
 if(keys['shift']){
-maxSpeed=9;
-player.slip+=0.5;
+max=9
+player.slip+=0.5
 }else{
-player.slip-=0.3;
+player.slip-=0.3
 }
 
-player.slip=Math.max(0,Math.min(100,player.slip));
+player.slip=Math.max(0,Math.min(100,player.slip))
+slipFill.style.width=player.slip+'%'
 
-document.getElementById('slipFill').style.width=player.slip+'%';
+if(keys['a'])player.vx-=accel
+if(keys['d'])player.vx+=accel
+if(keys['w'])player.vy-=accel
+if(keys['s'])player.vy+=accel
 
-if(keys['a'])player.velocityX-=accel;
-if(keys['d'])player.velocityX+=accel;
-if(keys['w'])player.velocityY-=accel;
-if(keys['s'])player.velocityY+=accel;
+player.vx*=0.92
+player.vy*=0.92
 
-player.velocityX*=0.92;
-player.velocityY*=0.92;
+player.vx=Math.max(-max,Math.min(max,player.vx))
+player.vy=Math.max(-max,Math.min(max,player.vy))
 
-player.velocityX=Math.max(-maxSpeed,Math.min(maxSpeed,player.velocityX));
-player.velocityY=Math.max(-maxSpeed,Math.min(maxSpeed,player.velocityY));
-
-player.x+=player.velocityX;
-player.worldY+=player.velocityY;
+player.x+=player.vx
+player.y+=player.vy
 
 if(player.slip>=100){
-player.x+=(Math.random()-0.5)*20;
+player.x+=(Math.random()-0.5)*15
 }
 
 if(player.x<-pathWidth/2||player.x>pathWidth/2){
-player.lava=true;
+player.lava=true
 }
 
 lavaPenguins.forEach(lp=>{
+lp.angle+=lp.speed
 
-lp.angle+=lp.speed;
+const lx=Math.sin(lp.angle)*lp.distance
+const dx=player.x-lx
 
-const targetX=Math.sin(lp.angle)*lp.distance;
-
-const dx=player.x-targetX;
-
-if(Math.abs(dx)<70&&Math.random()<0.01){
-lp.attack=20;
-player.x+=dx>0?35:-35;
+if(Math.abs(dx)<70&&Math.random()<0.015){
+lp.attack=20
+player.x+=dx>0?40:-40
 }
 
-if(lp.attack>0){
-lp.attack--;
+if(lp.attack>0)lp.attack--
+})
+
+magma.forEach(m=>{
+if(m.taken)return
+
+const dx=player.x-m.x
+const dy=player.y-m.y
+
+if(Math.abs(dx)<20&&Math.abs(dy)<20){
+m.taken=true
+player.coins++
+coins.innerHTML='🧊 '+player.coins
 }
-
-});
-
-coins.forEach(c=>{
-if(c.taken)return;
-
-const dx=player.x-c.x;
-const dy=player.worldY-c.y;
-
-if(Math.abs(dx)<25&&Math.abs(dy)<25){
-c.taken=true;
-player.coins++;
-document.getElementById('coins').innerHTML='🪙 '+player.coins;
-}
-});
+})
 
 if(train.active){
-train.y-=12;
+train.y-=12
 
-if(train.y<player.worldY+150&&train.y>player.worldY-150){
-player.lava=true;
+if(train.y<player.y+150&&train.y>player.y-150){
+player.lava=true
 }
 
-if(train.y<player.worldY-3000){
-train.active=false;
+if(train.y<player.y-3000){
+train.active=false
 }
 }
 
+if(timer>0){
+timer-=1/60
+}else{
+endGame()
 }
 
-function drawPenguin(x,y,lava=false){
+const mins=Math.floor(timer/60)
+const secs=Math.floor(timer%60).toString().padStart(2,'0')
 
-ctx.save();
+document.getElementById('timer').innerHTML=`${mins}:${secs}`
+}
 
-ctx.translate(x,y);
+async function endGame(){
+gameStarted=false
 
-ctx.fillStyle=lava?'#ff3c00':'white';
+if(!player.lava&&currentUser){
+const ref=doc(db,'users',currentUser.uid)
+await updateDoc(ref,{magma:increment(10)})
+alert('GANASTE 10 CUBOS DE MAGMA')
+}
 
-ctx.beginPath();
-ctx.ellipse(0,0,18,24,0,0,Math.PI*2);
-ctx.fill();
+location.reload()
+}
 
-ctx.fillStyle='black';
-ctx.beginPath();
-ctx.arc(-5,-5,2,0,Math.PI*2);
-ctx.arc(5,-5,2,0,Math.PI*2);
-ctx.fill();
+function penguin(x,y,lava=false){
+ctx.fillStyle=lava?'#ff4d00':'white'
+ctx.beginPath()
+ctx.ellipse(x,y,18,24,0,0,6.28)
+ctx.fill()
 
-ctx.fillStyle='orange';
-ctx.beginPath();
-ctx.moveTo(0,2);
-ctx.lineTo(-4,7);
-ctx.lineTo(4,7);
-ctx.fill();
+ctx.fillStyle='black'
+ctx.beginPath()
+ctx.arc(x-5,y-5,2,0,6.28)
+ctx.arc(x+5,y-5,2,0,6.28)
+ctx.fill()
 
-ctx.restore();
+ctx.fillStyle='orange'
+ctx.beginPath()
+ctx.moveTo(x,y+2)
+ctx.lineTo(x-4,y+7)
+ctx.lineTo(x+4,y+7)
+ctx.fill()
 }
 
 function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+const g=ctx.createLinearGradient(0,0,0,canvas.height)
+g.addColorStop(0,'#ff5a00')
+g.addColorStop(1,'#551100')
+ctx.fillStyle=g
+ctx.fillRect(0,0,canvas.width,canvas.height)
 
-const gradient=ctx.createLinearGradient(0,0,0,canvas.height);
-gradient.addColorStop(0,'#ff5a00');
-gradient.addColorStop(1,'#661100');
-ctx.fillStyle=gradient;
-ctx.fillRect(0,0,canvas.width,canvas.height);
+const cx=canvas.width/2
 
-const centerX=canvas.width/2;
+ctx.fillStyle='#523019'
+ctx.beginPath()
+ctx.moveTo(cx-pathWidth/2,0)
+ctx.lineTo(cx+pathWidth/2,0)
+ctx.lineTo(cx+pathWidth/2+140,canvas.height)
+ctx.lineTo(cx-pathWidth/2-140,canvas.height)
+ctx.fill()
 
-ctx.fillStyle='#4a2d16';
-ctx.beginPath();
-ctx.moveTo(centerX-pathWidth/2,0);
-ctx.lineTo(centerX+pathWidth/2,0);
-ctx.lineTo(centerX+pathWidth/2+140,canvas.height);
-ctx.lineTo(centerX-pathWidth/2-140,canvas.height);
-ctx.fill();
+magma.forEach(m=>{
+if(m.taken)return
 
-for(let i=0;i<60;i++){
-ctx.fillStyle='rgba(0,0,0,0.08)';
-ctx.fillRect(centerX-100+Math.sin(i)*30,i*40,200,18);
-}
+const sy=m.y-player.y+canvas.height/2
 
-coins.forEach(c=>{
-if(c.taken)return;
+if(sy<-50||sy>canvas.height+50)return
 
-const sy=c.y-player.worldY+canvas.height/2;
-
-if(sy<-50||sy>canvas.height+50)return;
-
-ctx.fillStyle='gold';
-ctx.beginPath();
-ctx.arc(centerX+c.x,sy,10,0,Math.PI*2);
-ctx.fill();
-});
+ctx.fillStyle='gold'
+ctx.beginPath()
+ctx.arc(cx+m.x,sy,10,0,6.28)
+ctx.fill()
+})
 
 lavaPenguins.forEach(lp=>{
+const sy=lp.y-player.y+canvas.height/2
 
-const sy=lp.y-player.worldY+canvas.height/2;
+if(sy<-100||sy>canvas.height+100)return
 
-if(sy<-100||sy>canvas.height+100)return;
-
-let px=centerX+Math.sin(lp.angle)*lp.distance;
+let px=cx+Math.sin(lp.angle)*lp.distance
 
 if(lp.attack>0){
-px+=(player.x-px)*0.1;
+px+=(player.x-px)*0.08
 }
 
-ctx.fillStyle='rgba(255,80,0,0.4)';
-ctx.beginPath();
-ctx.arc(px,sy+15,35,0,Math.PI*2);
-ctx.fill();
+ctx.fillStyle='rgba(255,80,0,.4)'
+ctx.beginPath()
+ctx.arc(px,sy+15,35,0,6.28)
+ctx.fill()
 
-drawPenguin(px,sy,true);
-});
+penguin(px,sy,true)
+})
 
 if(train.active){
-const ty=train.y-player.worldY+canvas.height/2;
+const ty=train.y-player.y+canvas.height/2
 
-ctx.fillStyle='gray';
-ctx.fillRect(centerX-150,ty,300,240);
+ctx.fillStyle='gray'
+ctx.fillRect(cx-150,ty,300,240)
 
-ctx.fillStyle='yellow';
-ctx.fillRect(centerX-100,ty+50,50,50);
-ctx.fillRect(centerX+50,ty+50,50,50);
+ctx.fillStyle='yellow'
+ctx.fillRect(cx-100,ty+40,50,50)
+ctx.fillRect(cx+50,ty+40,50,50)
 }
 
-const py=canvas.height-180;
+const py=canvas.height-180
 
-ctx.fillStyle='white';
-ctx.font='20px Arial';
-ctx.fillText(player.name,centerX+player.x-20,py-35);
+ctx.fillStyle='white'
+ctx.font='20px Arial'
+ctx.fillText(player.name,cx+player.x-20,py-35)
 
-drawPenguin(centerX+player.x,py,player.lava);
-
-ctx.fillStyle='#00aa66';
-ctx.fillRect(centerX-250,-40,500,90);
-
-ctx.fillStyle='white';
-ctx.font='30px Arial';
-ctx.fillText('SAFE ZONE',centerX-90,35);
-
-if(player.lava){
-ctx.fillStyle='white';
-ctx.font='60px Arial';
-ctx.fillText('TE VOLVISTE PINGÜINO DE LAVA',100,canvas.height/2);
-}
-
+penguin(cx+player.x,py,player.lava)
 }
 
 function loop(){
-update();
-draw();
-requestAnimationFrame(loop);
+update()
+draw()
+requestAnimationFrame(loop)
 }
 
-loop();
+loop()
 
 </script>
 
 </body>
 </html>
-
