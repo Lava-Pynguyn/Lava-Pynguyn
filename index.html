@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,8 +26,6 @@ display:block;
 background:#1a0000;
 }
 
-/* PANTALLAS */
-
 .screen{
 position:absolute;
 inset:0;
@@ -39,13 +38,13 @@ z-index:20;
 }
 
 .hidden{
-display:none !important;
+display:none!important;
 }
 
 .title{
 font-size:72px;
-color:#ff7b00;
 margin-bottom:20px;
+color:#ff7b00;
 text-shadow:0 0 25px red;
 }
 
@@ -81,17 +80,15 @@ transform:scale(1.05);
 }
 
 .disabled{
-background:#555 !important;
+background:#555!important;
 cursor:not-allowed;
 }
-
-/* UI */
 
 #topUI{
 position:absolute;
 top:10px;
 left:10px;
-z-index:5;
+z-index:50;
 }
 
 #coins{
@@ -100,7 +97,7 @@ margin-top:10px;
 }
 
 #timer{
-font-size:30px;
+font-size:32px;
 }
 
 #slipBar{
@@ -109,7 +106,7 @@ height:22px;
 background:#333;
 border-radius:20px;
 overflow:hidden;
-margin-top:10px;
+margin-top:12px;
 }
 
 #slipFill{
@@ -117,8 +114,6 @@ width:0%;
 height:100%;
 background:orange;
 }
-
-/* ALERTA */
 
 #alert{
 position:absolute;
@@ -130,15 +125,13 @@ font-weight:bold;
 color:red;
 text-shadow:0 0 20px black;
 display:none;
-z-index:50;
+z-index:100;
 }
-
-/* TIENDA */
 
 #cartBtn{
 position:absolute;
-top:15px;
-right:15px;
+top:12px;
+right:12px;
 z-index:60;
 font-size:24px;
 padding:10px 18px;
@@ -149,24 +142,61 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-width:500px;
-height:400px;
+width:650px;
+height:500px;
 background:#220000;
 border:3px solid orange;
-border-radius:20px;
+border-radius:24px;
 padding:20px;
-z-index:70;
 display:none;
+z-index:80;
+overflow:auto;
+}
+
+.shopGrid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+margin-top:20px;
 }
 
 .shopItem{
 background:#330000;
 padding:20px;
-margin-top:10px;
-border-radius:12px;
+border-radius:16px;
+min-height:120px;
 }
 
-/* ANIMACIÓN CUBOS */
+.playerCard{
+padding:10px;
+background:#2d0000;
+border-radius:12px;
+margin:6px;
+font-size:20px;
+}
+
+#chat{
+position:absolute;
+left:10px;
+bottom:10px;
+width:280px;
+height:180px;
+background:rgba(0,0,0,.45);
+border-radius:14px;
+padding:10px;
+z-index:40;
+}
+
+#chatMessages{
+height:120px;
+overflow:auto;
+font-size:14px;
+}
+
+#chatInput{
+width:100%;
+margin-top:10px;
+}
 
 .cubeAnim{
 position:absolute;
@@ -174,207 +204,105 @@ left:50%;
 top:50%;
 transform:translate(-50%,-50%);
 font-size:50px;
-z-index:100;
+z-index:120;
 pointer-events:none;
 animation:cubeFly 1s forwards;
 }
 
 @keyframes cubeFly{
-
 0%{
 left:50%;
 top:50%;
 opacity:1;
 transform:scale(1);
 }
-
 100%{
-left:90px;
+left:80px;
 top:25px;
 opacity:0;
 transform:scale(.2);
 }
-
-}
-
-.playerName{
-margin:5px;
-font-size:20px;
 }
 
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-
 <div id="authScreen" class="screen">
-
 <div class="title">LAVA PYNGUYN</div>
-
-<div class="subtitle">
-Escapa del tren y de los pingüinos de lava
-</div>
+<div class="subtitle">Escapa del tren y de los pingüinos de lava</div>
 
 <input id="name" placeholder="nombre">
-
 <input id="email" placeholder="correo">
+<input id="password" type="password" placeholder="contraseña">
 
-<input
-id="password"
-type="password"
-placeholder="contraseña">
-
-<button onclick="register()">
-CREAR CUENTA
-</button>
-
-<button onclick="login()">
-INICIAR SESIÓN
-</button>
-
+<button id="registerBtn">CREAR CUENTA</button>
+<button id="loginBtn">INICIAR SESIÓN</button>
 </div>
-
-<!-- MENU -->
 
 <div id="menuScreen" class="screen hidden">
-
-<div class="title">JUGAR</div>
-
-<button onclick="openPublic()">
-PARTIDA PÚBLICA
-</button>
-
-<button onclick="openPrivate()">
-PARTIDA PRIVADA
-</button>
-
+<div class="title">MENÚ</div>
+<button id="publicBtn">PARTIDA PÚBLICA</button>
+<button id="privateBtn">PARTIDA PRIVADA</button>
+<button id="trainingBtn">ENTRENAMIENTO</button>
 </div>
-
-<!-- PUBLIC -->
 
 <div id="publicScreen" class="screen hidden">
-
-<div class="title">
-BUSCANDO PARTIDA
+<div class="title">BUSCANDO PARTIDA</div>
+<div id="publicCount">1/5</div>
 </div>
-
-<div id="publicCount">
-1/5
-</div>
-
-</div>
-
-<!-- PRIVATE -->
 
 <div id="privateScreen" class="screen hidden">
-
-<div class="title">
-PARTIDA PRIVADA
+<div class="title">PARTIDA PRIVADA</div>
+<button id="createRoomBtn">CREAR PARTIDA</button>
+<input id="roomInput" placeholder="código">
+<button id="joinRoomBtn">UNIRSE</button>
 </div>
-
-<button onclick="createRoom()">
-CREAR PARTIDA
-</button>
-
-<input
-id="roomInput"
-placeholder="código">
-
-<button onclick="joinRoom()">
-UNIRSE
-</button>
-
-</div>
-
-<!-- ROOM -->
 
 <div id="roomScreen" class="screen hidden">
-
-<div class="title">
-SALA
-</div>
-
-<div
-id="roomCode"
-style="font-size:50px;color:gold;">
-AAAAA
-</div>
-
+<div class="title">SALA</div>
+<div id="roomCode" style="font-size:48px;color:gold;">AAAAA</div>
 <div id="lobbyPlayers"></div>
-
-<button
-id="startBtn"
-class="disabled">
-
-MÍNIMO 3 JUGADORES
-
-</button>
-
+<button id="startBtn" class="disabled">MÍNIMO 3 JUGADORES</button>
 </div>
 
-<!-- SHOP -->
-
-<button
-id="cartBtn"
-class="hidden"
-onclick="toggleShop()">
-
-🛒
-
-</button>
+<button id="cartBtn" class="hidden">🛒</button>
 
 <div id="shop">
-
-<h2>TIENDA</h2>
-
-<div class="shopItem">
-Próximamente...
+<h1>TIENDA</h1>
+<div class="shopGrid">
+<div class="shopItem">Skin Pingüino Azul<br><br>Próximamente</div>
+<div class="shopItem">Sombrero Volcánico<br><br>Próximamente</div>
+<div class="shopItem">Traje de Lava<br><br>Próximamente</div>
+<div class="shopItem">Rastro de Fuego<br><br>Próximamente</div>
 </div>
-
-<button onclick="toggleShop()">
-CERRAR
-</button>
-
+<button id="closeShop">Cerrar</button>
 </div>
-
-<!-- UI -->
 
 <div id="topUI" class="hidden">
-
-<div id="timer">
-2:30
+<div id="timer">2:30</div>
+<div id="coins">🧊 0</div>
+<div id="slipBar"><div id="slipFill"></div></div>
 </div>
 
-<div id="coins">
-🧊 0
+<div id="chat" class="hidden">
+<div id="chatMessages"></div>
+<input id="chatInput" placeholder="mensaje...">
 </div>
 
-<div id="slipBar">
-<div id="slipFill"></div>
-</div>
-
-</div>
-
-<div id="alert">
-🚨 ALERTA 🚨
-</div>
+<div id="alert">🚨 ALERTA 🚨</div>
 
 <canvas id="game"></canvas>
 
 <script type="module">
 
-/* FIREBASE */
-
-import { initializeApp }
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
 
 import {
 getAuth,
 createUserWithEmailAndPassword,
 signInWithEmailAndPassword
-}
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'
 
 import {
 getFirestore,
@@ -383,812 +311,531 @@ setDoc,
 getDoc,
 updateDoc,
 increment
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
+
+const firebaseConfig={
+apiKey:"AIzaSyBy1mulELJTWX0AF-ludd-KCvNysc46miA",
+authDomain:"lava-pynguyn.firebaseapp.com",
+projectId:"lava-pynguyn",
+storageBucket:"lava-pynguyn.firebasestorage.app",
+messagingSenderId:"642131777706",
+appId:"1:642131777706:web:1b4f6c8a47bb184c8e98d3"
 }
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
 
-const firebaseConfig = {
+const app=initializeApp(firebaseConfig)
+const auth=getAuth(app)
+const db=getFirestore(app)
 
-apiKey: "AIzaSyBy1mulELJTWX0AF-ludd-KCvNysc46miA",
+const canvas=document.getElementById('game')
+const ctx=canvas.getContext('2d')
 
-authDomain: "lava-pynguyn.firebaseapp.com",
+canvas.width=innerWidth
+canvas.height=innerHeight
 
-projectId: "lava-pynguyn",
-
-storageBucket: "lava-pynguyn.firebasestorage.app",
-
-messagingSenderId: "642131777706",
-
-appId: "1:642131777706:web:1b4f6c8a47bb184c8e98d3"
-
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-/* ELEMENTOS */
-
-const canvas =
-document.getElementById('game');
-
-const ctx =
-canvas.getContext('2d');
-
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
-const screens = {
-
-auth:
-document.getElementById('authScreen'),
-
-menu:
-document.getElementById('menuScreen'),
-
-public:
-document.getElementById('publicScreen'),
-
-private:
-document.getElementById('privateScreen'),
-
-room:
-document.getElementById('roomScreen')
-
-};
+const screens={
+auth:document.getElementById('authScreen'),
+menu:document.getElementById('menuScreen'),
+public:document.getElementById('publicScreen'),
+private:document.getElementById('privateScreen'),
+room:document.getElementById('roomScreen')
+}
 
 function show(name){
-
-Object.values(screens)
-.forEach(s=>s.classList.add('hidden'));
-
-screens[name]
-.classList.remove('hidden');
-
+Object.values(screens).forEach(s=>s.classList.add('hidden'))
+screens[name].classList.remove('hidden')
 }
 
-let currentUser=null;
-
-let gameStarted=false;
-
-let timer=150;
+const state={
+currentUser:null,
+roomId:'',
+gameStarted:false,
+coins:0,
+timer:150,
+playersInLobby:1,
+messages:[]
+}
 
 const player={
-
-name:'',
-
+name:'Player',
 x:0,
 y:0,
-
 vx:0,
 vy:0,
-
 slip:0,
-
 lava:false,
+speed:5,
+rotation:0
+}
 
-coins:0
-
-};
-
-const keys={};
+const keys={}
 
 addEventListener('keydown',e=>{
-
-keys[e.key.toLowerCase()]=true;
-
-});
+keys[e.key.toLowerCase()]=true
+})
 
 addEventListener('keyup',e=>{
+keys[e.key.toLowerCase()]=false
+})
 
-keys[e.key.toLowerCase()]=false;
+async function register(){
 
-});
+const name=document.getElementById('name').value
+const email=document.getElementById('email').value
+const password=document.getElementById('password').value
 
-/* AUTH */
-
-window.register = async ()=>{
-
-const email =
-document.getElementById('email').value;
-
-const password =
-document.getElementById('password').value;
-
-const name =
-document.getElementById('name').value;
-
-if(!email || !password || !name){
-
-alert('Completa todo');
-
-return;
-
+if(!name||!email||!password){
+alert('Completa todo')
+return
 }
 
 try{
 
-const cred =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
+const cred=await createUserWithEmailAndPassword(auth,email,password)
 
-await setDoc(
-doc(db,'users',cred.user.uid),
-{
+await setDoc(doc(db,'users',cred.user.uid),{
 name:name,
-magma:0
-}
-);
+magma:0,
+wins:0,
+skin:'default'
+})
 
-alert('Cuenta creada');
+alert('Cuenta creada correctamente')
 
 }catch(err){
-
-alert(err.message);
-
+alert(err.message)
+}
 }
 
-};
+async function login(){
 
-window.login = async ()=>{
-
-const email =
-document.getElementById('email').value;
-
-const password =
-document.getElementById('password').value;
+const email=document.getElementById('email').value
+const password=document.getElementById('password').value
 
 try{
 
-const cred =
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
+const cred=await signInWithEmailAndPassword(auth,email,password)
 
-currentUser = cred.user;
+state.currentUser=cred.user
 
-const snap =
-await getDoc(
-doc(db,'users',cred.user.uid)
-);
+const snap=await getDoc(doc(db,'users',cred.user.uid))
 
-const data = snap.data();
+if(snap.exists()){
+const data=snap.data()
+player.name=data.name
+state.coins=data.magma||0
+}
 
-player.name = data.name;
+document.getElementById('coins').innerHTML='🧊 '+state.coins
 
-player.coins = data.magma || 0;
+show('menu')
 
-document.getElementById('coins')
-.innerHTML =
-'🧊 '+player.coins;
-
-show('menu');
-
-document
-.getElementById('cartBtn')
-.classList.remove('hidden');
+document.getElementById('cartBtn').classList.remove('hidden')
 
 }catch(err){
-
-alert(err.message);
-
+alert(err.message)
+}
 }
 
-};
+document.getElementById('registerBtn').onclick=register
 
-/* TIENDA */
+document.getElementById('loginBtn').onclick=login
 
-window.toggleShop = ()=>{
+const shop=document.getElementById('shop')
 
-const shop =
-document.getElementById('shop');
-
-if(shop.style.display==='block'){
-
-shop.style.display='none';
-
-}else{
-
-shop.style.display='block';
-
+document.getElementById('cartBtn').onclick=()=>{
+shop.style.display='block'
 }
 
-};
-
-/* PARTIDA PUBLICA */
-
-window.openPublic = ()=>{
-
-show('public');
-
-let count=1;
-
-const interval=setInterval(()=>{
-
-count++;
-
-document.getElementById('publicCount')
-.innerHTML=count+'/5';
-
-if(count>=5){
-
-clearInterval(interval);
-
-startGame();
-
+document.getElementById('closeShop').onclick=()=>{
+shop.style.display='none'
 }
 
-},1000);
+function randomCode(){
+const chars='ABCDEFGHJKLMNPQRSTUVWXYZ123456789'
+let code=''
+for(let i=0;i<5;i++){
+code+=chars[Math.floor(Math.random()*chars.length)]
+}
+return code
+}
 
-};
+document.getElementById('publicBtn').onclick=()=>{
+show('public')
 
-/* PRIVADA */
+let current=1
 
-window.openPrivate = ()=>{
+const matchmaking=setInterval(()=>{
+current++
 
-show('private');
+document.getElementById('publicCount').innerHTML=current+'/5'
 
-};
+if(current>=5){
+clearInterval(matchmaking)
+startGame()
+}
 
-window.createRoom = ()=>{
+},1000)
+}
 
-show('room');
+document.getElementById('privateBtn').onclick=()=>{
+show('private')
+}
 
-document.getElementById('roomCode')
-.innerHTML='ABX92';
+document.getElementById('trainingBtn').onclick=()=>{
+startGame()
+}
 
-document.getElementById('lobbyPlayers')
-.innerHTML=`
+document.getElementById('createRoomBtn').onclick=()=>{
+state.roomId=randomCode()
+openRoom([
+player.name,
+'Jugador2',
+'Jugador3'
+])
+}
 
-<div class="playerName">
-🐧 ${player.name}
-</div>
+document.getElementById('joinRoomBtn').onclick=()=>{
+state.roomId=document.getElementById('roomInput').value.toUpperCase()
 
-<div class="playerName">
-🐧 Jugador2
-</div>
+if(state.roomId.length<5){
+alert('Código inválido')
+return
+}
 
-<div class="playerName">
-🐧 Jugador3
-</div>
+openRoom([
+player.name,
+'Jugador2',
+'Jugador3',
+'Jugador4'
+])
+}
 
-`;
+function openRoom(players){
+show('room')
 
-const btn =
-document.getElementById('startBtn');
+document.getElementById('roomCode').innerHTML=state.roomId
 
-btn.classList.remove('disabled');
+const lobby=document.getElementById('lobbyPlayers')
 
-btn.innerHTML='JUGAR';
+let html=''
 
+players.forEach(p=>{
+html+=`<div class="playerCard">🐧 ${p}</div>`
+})
+
+html+=`<br>${players.length}/5`
+
+lobby.innerHTML=html
+
+const btn=document.getElementById('startBtn')
+
+if(players.length>=3){
+btn.classList.remove('disabled')
+btn.innerHTML='JUGAR'
 btn.onclick=()=>{
-
-alert('Jugador2 ES EL PINGÜINO DE LAVA');
-
-startGame();
-
-};
-
-};
-
-window.joinRoom = ()=>{
-
-createRoom();
-
-};
-
-/* START GAME */
+const lava=players[Math.floor(Math.random()*players.length)]
+alert(lava+' ES EL PINGÜINO DE LAVA')
+startGame()
+}
+}
+}
 
 function startGame(){
+state.gameStarted=true
 
-gameStarted=true;
+Object.values(screens).forEach(s=>s.classList.add('hidden'))
 
-Object.values(screens)
-.forEach(s=>s.classList.add('hidden'));
-
-document
-.getElementById('topUI')
-.classList.remove('hidden');
-
+document.getElementById('topUI').classList.remove('hidden')
+document.getElementById('chat').classList.remove('hidden')
 }
 
-/* GAME */
+const pathWidth=260
 
-const pathWidth=240;
-
-const lavaPenguins=[];
-
-for(let i=0;i<10;i++){
-
-lavaPenguins.push({
-
-angle:Math.random()*6.28,
-
-distance:180+Math.random()*80,
-
-y:Math.random()*10000,
-
-speed:0.01+Math.random()*0.03,
-
-attack:0
-
-});
-
-}
-
-const magma=[];
-
+const cubes=[]
 for(let i=0;i<80;i++){
-
-magma.push({
-
-x:(Math.random()-0.5)*120,
-
-y:-i*250,
-
+cubes.push({
+x:(Math.random()-0.5)*180,
+y:-i*260,
 taken:false
-
-});
-
+})
 }
+
+const lavaPenguins=[]
+for(let i=0;i<12;i++){
+lavaPenguins.push({
+angle:Math.random()*6.28,
+distance:190+Math.random()*90,
+y:Math.random()*9000,
+speed:0.01+Math.random()*0.02
+})
+}
+
+const particles=[]
 
 let train={
 active:false,
 y:2000
-};
+}
 
 setInterval(()=>{
+if(state.gameStarted&&!train.active){
+train.active=true
+train.y=player.y+1800
 
-if(gameStarted&&!train.active){
-
-train.active=true;
-
-train.y=player.y+1800;
-
-document
-.getElementById('alert')
-.style.display='block';
+const alert=document.getElementById('alert')
+alert.style.display='block'
 
 setTimeout(()=>{
-
-document
-.getElementById('alert')
-.style.display='none';
-
-},2000);
-
+alert.style.display='none'
+},2000)
 }
-
-},15000);
-
-/* ANIMACION CUBOS */
+},18000)
 
 function cubeAnimation(){
-
-const div =
-document.createElement('div');
-
-div.className='cubeAnim';
-
-div.innerHTML='🧊 +1';
-
-document.body.appendChild(div);
-
-setTimeout(()=>{
-
-div.remove();
-
-},1000);
-
+const div=document.createElement('div')
+div.className='cubeAnim'
+div.innerHTML='🧊 +1'
+document.body.appendChild(div)
+setTimeout(()=>div.remove(),1000)
 }
-
-/* UPDATE */
 
 function update(){
 
-if(!gameStarted)return;
+if(!state.gameStarted)return
 
-let accel=0.45;
-
-let max=5;
+let accel=.4
+let max=5
 
 if(keys['shift']){
-
-max=9;
-
-player.slip+=0.5;
-
+max=9
+player.slip+=.5
 }else{
-
-player.slip-=0.3;
-
+player.slip-=.25
 }
 
-player.slip=
-Math.max(
-0,
-Math.min(100,player.slip)
-);
+player.slip=Math.max(0,Math.min(100,player.slip))
 
-document
-.getElementById('slipFill')
-.style.width=
-player.slip+'%';
+document.getElementById('slipFill').style.width=player.slip+'%'
 
-if(keys['a'])player.vx-=accel;
-if(keys['d'])player.vx+=accel;
-if(keys['w'])player.vy-=accel;
-if(keys['s'])player.vy+=accel;
+if(keys['a'])player.vx-=accel
+if(keys['d'])player.vx+=accel
+if(keys['w'])player.vy-=accel
+if(keys['s'])player.vy+=accel
 
-player.vx*=0.92;
-player.vy*=0.92;
+player.vx*=.92
+player.vy*=.92
 
-player.vx=
-Math.max(-max,
-Math.min(max,player.vx));
+player.vx=Math.max(-max,Math.min(max,player.vx))
+player.vy=Math.max(-max,Math.min(max,player.vy))
 
-player.vy=
-Math.max(-max,
-Math.min(max,player.vy));
+player.x+=player.vx
+player.y+=player.vy
 
-player.x+=player.vx;
-player.y+=player.vy;
-
-if(player.x<-pathWidth/2
-|| player.x>pathWidth/2){
-
-player.lava=true;
-
+if(player.x<-pathWidth/2||player.x>pathWidth/2){
+player.lava=true
 }
 
-lavaPenguins.forEach(lp=>{
+cubes.forEach(c=>{
 
-lp.angle+=lp.speed;
+if(c.taken)return
 
-const lx=
-Math.sin(lp.angle)
-*lp.distance;
+const dx=player.x-c.x
+const dy=player.y-c.y
 
-const dx=player.x-lx;
+if(Math.abs(dx)<22&&Math.abs(dy)<22){
 
-if(Math.abs(dx)<70
-&& Math.random()<0.02){
+c.taken=true
+state.coins++
 
-lp.attack=20;
+cubeAnimation()
 
-player.x += dx>0?40:-40;
+document.getElementById('coins').innerHTML='🧊 '+state.coins
 
+for(let i=0;i<6;i++){
+particles.push({
+x:c.x,
+y:c.y,
+vx:(Math.random()-.5)*4,
+vy:(Math.random()-.5)*4,
+life:30
+})
 }
-
-});
-
-magma.forEach(m=>{
-
-if(m.taken)return;
-
-const dx=player.x-m.x;
-const dy=player.y-m.y;
-
-if(Math.abs(dx)<20
-&& Math.abs(dy)<20){
-
-m.taken=true;
-
-player.coins++;
-
-cubeAnimation();
-
-document
-.getElementById('coins')
-.innerHTML=
-'🧊 '+player.coins;
-
 }
+})
 
-});
+particles.forEach(p=>{
+p.x+=p.vx
+p.y+=p.vy
+p.life--
+})
+
+for(let i=particles.length-1;i>=0;i--){
+if(particles[i].life<=0){
+particles.splice(i,1)
+}
+}
 
 if(train.active){
+train.y-=12
 
-train.y-=12;
-
-if(train.y<player.y+150
-&& train.y>player.y-150){
-
-player.lava=true;
-
+if(train.y<player.y+150&&train.y>player.y-150){
+player.lava=true
 }
 
 if(train.y<player.y-3000){
-
-train.active=false;
-
+train.active=false
+}
 }
 
-}
-
-if(timer>0){
-
-timer-=1/60;
-
+if(state.timer>0){
+state.timer-=1/60
 }else{
-
-endGame();
-
+endGame()
 }
 
-const mins=
-Math.floor(timer/60);
+const mins=Math.floor(state.timer/60)
+const secs=Math.floor(state.timer%60).toString().padStart(2,'0')
 
-const secs=
-Math.floor(timer%60)
-.toString()
-.padStart(2,'0');
-
-document
-.getElementById('timer')
-.innerHTML=
-`${mins}:${secs}`;
-
+document.getElementById('timer').innerHTML=`${mins}:${secs}`
 }
-
-/* END GAME */
 
 async function endGame(){
 
-gameStarted=false;
+state.gameStarted=false
 
-if(!player.lava
-&& currentUser){
+if(!player.lava&&state.currentUser){
 
-await updateDoc(
-doc(db,'users',currentUser.uid),
-{
+await updateDoc(doc(db,'users',state.currentUser.uid),{
 magma:increment(10)
-}
-);
+})
 
-alert(
-'GANASTE 10 CUBOS DE MAGMA'
-);
-
+alert('GANASTE 10 CUBOS DE MAGMA')
 }
 
-location.reload();
-
+location.reload()
 }
 
-/* DIBUJAR PINGUINO */
+function drawPenguin(x,y,lava=false){
 
-function penguin(x,y,lava=false){
+ctx.save()
+ctx.translate(x,y)
 
-ctx.fillStyle=
-lava?'#ff4d00':'white';
+ctx.fillStyle=lava?'#ff4d00':'white'
+ctx.beginPath()
+ctx.ellipse(0,0,18,24,0,0,6.28)
+ctx.fill()
 
-ctx.beginPath();
+ctx.fillStyle='black'
+ctx.beginPath()
+ctx.arc(-5,-5,2,0,6.28)
+ctx.arc(5,-5,2,0,6.28)
+ctx.fill()
 
-ctx.ellipse(
-x,y,
-18,24,
-0,0,6.28
-);
+ctx.fillStyle='orange'
+ctx.beginPath()
+ctx.moveTo(0,2)
+ctx.lineTo(-4,7)
+ctx.lineTo(4,7)
+ctx.fill()
 
-ctx.fill();
-
-ctx.fillStyle='black';
-
-ctx.beginPath();
-
-ctx.arc(x-5,y-5,2,0,6.28);
-ctx.arc(x+5,y-5,2,0,6.28);
-
-ctx.fill();
-
-ctx.fillStyle='orange';
-
-ctx.beginPath();
-
-ctx.moveTo(x,y+2);
-ctx.lineTo(x-4,y+7);
-ctx.lineTo(x+4,y+7);
-
-ctx.fill();
-
+ctx.restore()
 }
-
-/* DRAW */
 
 function draw(){
 
-ctx.clearRect(
-0,0,
-canvas.width,
-canvas.height
-);
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
-const g=
-ctx.createLinearGradient(
-0,0,
-0,canvas.height
-);
+const g=ctx.createLinearGradient(0,0,0,canvas.height)
+g.addColorStop(0,'#ff5a00')
+g.addColorStop(1,'#551100')
+ctx.fillStyle=g
+ctx.fillRect(0,0,canvas.width,canvas.height)
 
-g.addColorStop(0,'#ff5a00');
-g.addColorStop(1,'#551100');
+const cx=canvas.width/2
 
-ctx.fillStyle=g;
+ctx.fillStyle='#523019'
+ctx.beginPath()
+ctx.moveTo(cx-pathWidth/2,0)
+ctx.lineTo(cx+pathWidth/2,0)
+ctx.lineTo(cx+pathWidth/2+140,canvas.height)
+ctx.lineTo(cx-pathWidth/2-140,canvas.height)
+ctx.fill()
 
-ctx.fillRect(
-0,0,
-canvas.width,
-canvas.height
-);
+for(let i=0;i<40;i++){
+ctx.fillStyle='rgba(0,0,0,.08)'
+ctx.fillRect(cx-110+Math.sin(i)*25,i*45,220,18)
+}
 
-const cx=
-canvas.width/2;
+cubes.forEach(c=>{
 
-ctx.fillStyle='#523019';
+if(c.taken)return
 
-ctx.beginPath();
+const sy=c.y-player.y+canvas.height/2
 
-ctx.moveTo(cx-pathWidth/2,0);
+if(sy<-50||sy>canvas.height+50)return
 
-ctx.lineTo(cx+pathWidth/2,0);
+ctx.fillStyle='gold'
+ctx.beginPath()
+ctx.arc(cx+c.x,sy,10,0,6.28)
+ctx.fill()
+})
 
-ctx.lineTo(
-cx+pathWidth/2+140,
-canvas.height
-);
-
-ctx.lineTo(
-cx-pathWidth/2-140,
-canvas.height
-);
-
-ctx.fill();
-
-/* CUBOS */
-
-magma.forEach(m=>{
-
-if(m.taken)return;
-
-const sy=
-m.y-player.y+
-canvas.height/2;
-
-if(sy<-50
-|| sy>canvas.height+50)
-return;
-
-ctx.fillStyle='gold';
-
-ctx.beginPath();
-
-ctx.arc(
-cx+m.x,
-sy,
-10,
-0,
-6.28
-);
-
-ctx.fill();
-
-});
-
-/* LAVA PENGUINS */
+particles.forEach(p=>{
+const sy=p.y-player.y+canvas.height/2
+ctx.fillStyle='orange'
+ctx.fillRect(cx+p.x,sy,4,4)
+})
 
 lavaPenguins.forEach(lp=>{
 
-const sy=
-lp.y-player.y+
-canvas.height/2;
+const sy=lp.y-player.y+canvas.height/2
 
-if(sy<-100
-|| sy>canvas.height+100)
-return;
+if(sy<-100||sy>canvas.height+100)return
 
-let px=
-cx+
-Math.sin(lp.angle)
-*lp.distance;
+const px=cx+Math.sin(lp.angle)*lp.distance
 
-ctx.fillStyle=
-'rgba(255,80,0,.4)';
+ctx.fillStyle='rgba(255,80,0,.35)'
+ctx.beginPath()
+ctx.arc(px,sy+18,35,0,6.28)
+ctx.fill()
 
-ctx.beginPath();
-
-ctx.arc(
-px,
-sy+15,
-35,
-0,
-6.28
-);
-
-ctx.fill();
-
-penguin(px,sy,true);
-
-});
-
-/* TRAIN */
+drawPenguin(px,sy,true)
+})
 
 if(train.active){
 
-const ty=
-train.y-player.y+
-canvas.height/2;
+const ty=train.y-player.y+canvas.height/2
 
-ctx.fillStyle='gray';
+ctx.fillStyle='gray'
+ctx.fillRect(cx-150,ty,300,240)
 
-ctx.fillRect(
-cx-150,
-ty,
-300,
-240
-);
-
-ctx.fillStyle='yellow';
-
-ctx.fillRect(
-cx-100,
-ty+40,
-50,
-50
-);
-
-ctx.fillRect(
-cx+50,
-ty+40,
-50,
-50
-
-);
-
+ctx.fillStyle='yellow'
+ctx.fillRect(cx-100,ty+40,50,50)
+ctx.fillRect(cx+50,ty+40,50,50)
 }
 
-/* PLAYER */
+const py=canvas.height-180
 
-const py=
-canvas.height-180;
+ctx.fillStyle='white'
+ctx.font='20px Arial'
+ctx.fillText(player.name,cx+player.x-20,py-35)
 
-ctx.fillStyle='white';
+drawPenguin(cx+player.x,py,player.lava)
 
-ctx.font='20px Arial';
-
-ctx.fillText(
-player.name,
-cx+player.x-20,
-py-35
-);
-
-penguin(
-cx+player.x,
-py,
-player.lava
-);
-
+if(player.lava){
+ctx.fillStyle='white'
+ctx.font='58px Arial'
+ctx.fillText('TE VOLVISTE PINGÜINO DE LAVA',80,canvas.height/2)
 }
-
-/* LOOP */
+}
 
 function loop(){
-
-update();
-
-draw();
-
-requestAnimationFrame(loop);
-
+update()
+draw()
+requestAnimationFrame(loop)
 }
 
-loop();
+loop()
 
 </script>
 
