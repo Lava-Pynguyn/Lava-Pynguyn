@@ -25,6 +25,8 @@ display:block;
 background:#1a0000;
 }
 
+/* PANTALLAS */
+
 .screen{
 position:absolute;
 inset:0;
@@ -37,19 +39,19 @@ z-index:20;
 }
 
 .hidden{
-display:none;
+display:none !important;
 }
 
 .title{
-font-size:70px;
+font-size:72px;
 color:#ff7b00;
-text-shadow:0 0 25px red;
 margin-bottom:20px;
+text-shadow:0 0 25px red;
 }
 
 .subtitle{
-margin-bottom:20px;
 font-size:22px;
+margin-bottom:25px;
 opacity:.8;
 }
 
@@ -83,11 +85,22 @@ background:#555 !important;
 cursor:not-allowed;
 }
 
+/* UI */
+
 #topUI{
 position:absolute;
 top:10px;
 left:10px;
 z-index:5;
+}
+
+#coins{
+font-size:24px;
+margin-top:10px;
+}
+
+#timer{
+font-size:30px;
 }
 
 #slipBar{
@@ -100,27 +113,34 @@ margin-top:10px;
 }
 
 #slipFill{
-height:100%;
 width:0%;
+height:100%;
 background:orange;
 }
 
-#timer{
-font-size:30px;
-margin-top:10px;
+/* ALERTA */
+
+#alert{
+position:absolute;
+top:35%;
+width:100%;
+text-align:center;
+font-size:70px;
+font-weight:bold;
+color:red;
+text-shadow:0 0 20px black;
+display:none;
+z-index:50;
 }
 
-#coins{
-font-size:24px;
-margin-top:8px;
-}
+/* TIENDA */
 
 #cartBtn{
 position:absolute;
 top:15px;
 right:15px;
-z-index:50;
-font-size:22px;
+z-index:60;
+font-size:24px;
 padding:10px 18px;
 }
 
@@ -134,38 +154,52 @@ height:400px;
 background:#220000;
 border:3px solid orange;
 border-radius:20px;
-z-index:60;
 padding:20px;
+z-index:70;
 display:none;
-}
-
-#shop h2{
-margin-bottom:20px;
 }
 
 .shopItem{
 background:#330000;
 padding:20px;
-border-radius:14px;
 margin-top:10px;
+border-radius:12px;
 }
 
-#alert{
+/* ANIMACIÓN CUBOS */
+
+.cubeAnim{
 position:absolute;
-width:100%;
-top:35%;
-text-align:center;
-font-size:70px;
-font-weight:bold;
-color:red;
-text-shadow:0 0 20px black;
-display:none;
-z-index:10;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-size:50px;
+z-index:100;
+pointer-events:none;
+animation:cubeFly 1s forwards;
+}
+
+@keyframes cubeFly{
+
+0%{
+left:50%;
+top:50%;
+opacity:1;
+transform:scale(1);
+}
+
+100%{
+left:90px;
+top:25px;
+opacity:0;
+transform:scale(.2);
+}
+
 }
 
 .playerName{
-font-size:18px;
-margin:4px;
+margin:5px;
+font-size:20px;
 }
 
 </style>
@@ -330,6 +364,8 @@ CERRAR
 
 <script type="module">
 
+/* FIREBASE */
+
 import { initializeApp }
 from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
 
@@ -346,7 +382,6 @@ doc,
 setDoc,
 getDoc,
 updateDoc,
-onSnapshot,
 increment
 }
 from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
@@ -373,6 +408,8 @@ const auth = getAuth(app);
 
 const db = getFirestore(app);
 
+/* ELEMENTOS */
+
 const canvas =
 document.getElementById('game');
 
@@ -383,11 +420,22 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 const screens = {
-auth: authScreen,
-menu: menuScreen,
-public: publicScreen,
-private: privateScreen,
-room: roomScreen
+
+auth:
+document.getElementById('authScreen'),
+
+menu:
+document.getElementById('menuScreen'),
+
+public:
+document.getElementById('publicScreen'),
+
+private:
+document.getElementById('privateScreen'),
+
+room:
+document.getElementById('roomScreen')
+
 };
 
 function show(name){
@@ -401,8 +449,6 @@ screens[name]
 }
 
 let currentUser=null;
-
-let roomId='';
 
 let gameStarted=false;
 
@@ -440,6 +486,8 @@ keys[e.key.toLowerCase()]=false;
 
 });
 
+/* AUTH */
+
 window.register = async ()=>{
 
 const email =
@@ -472,8 +520,7 @@ await setDoc(
 doc(db,'users',cred.user.uid),
 {
 name:name,
-magma:0,
-wins:0
+magma:0
 }
 );
 
@@ -517,12 +564,15 @@ player.name = data.name;
 
 player.coins = data.magma || 0;
 
-coins.innerHTML =
+document.getElementById('coins')
+.innerHTML =
 '🧊 '+player.coins;
 
 show('menu');
 
-cartBtn.classList.remove('hidden');
+document
+.getElementById('cartBtn')
+.classList.remove('hidden');
 
 }catch(err){
 
@@ -532,7 +582,12 @@ alert(err.message);
 
 };
 
+/* TIENDA */
+
 window.toggleShop = ()=>{
+
+const shop =
+document.getElementById('shop');
 
 if(shop.style.display==='block'){
 
@@ -546,6 +601,8 @@ shop.style.display='block';
 
 };
 
+/* PARTIDA PUBLICA */
+
 window.openPublic = ()=>{
 
 show('public');
@@ -556,8 +613,8 @@ const interval=setInterval(()=>{
 
 count++;
 
-publicCount.innerHTML =
-count+'/5';
+document.getElementById('publicCount')
+.innerHTML=count+'/5';
 
 if(count>=5){
 
@@ -571,114 +628,62 @@ startGame();
 
 };
 
+/* PRIVADA */
+
 window.openPrivate = ()=>{
 
 show('private');
 
 };
 
-function randomCode(){
-
-const chars='ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
-
-let code='';
-
-for(let i=0;i<5;i++){
-
-code +=
-chars[
-Math.floor(
-Math.random()*chars.length
-)
-];
-
-}
-
-return code;
-
-}
-
 window.createRoom = ()=>{
 
-roomId=randomCode();
-
-roomCode.innerHTML=roomId;
-
 show('room');
 
-updateRoom([player.name]);
+document.getElementById('roomCode')
+.innerHTML='ABX92';
 
-};
+document.getElementById('lobbyPlayers')
+.innerHTML=`
 
-window.joinRoom = ()=>{
+<div class="playerName">
+🐧 ${player.name}
+</div>
 
-const code =
-roomInput.value.toUpperCase();
+<div class="playerName">
+🐧 Jugador2
+</div>
 
-if(code.length<5){
+<div class="playerName">
+🐧 Jugador3
+</div>
 
-alert('Código inválido');
+`;
 
-return;
+const btn =
+document.getElementById('startBtn');
 
-}
+btn.classList.remove('disabled');
 
-roomId=code;
+btn.innerHTML='JUGAR';
 
-roomCode.innerHTML=roomId;
+btn.onclick=()=>{
 
-show('room');
-
-updateRoom([
-player.name,
-'Jugador2',
-'Jugador3'
-]);
-
-};
-
-function updateRoom(players){
-
-let html='';
-
-players.forEach(p=>{
-
-html +=
-`<div class="playerName">
-🐧 ${p}
-</div>`;
-
-});
-
-html += `<br>${players.length}/5`;
-
-lobbyPlayers.innerHTML=html;
-
-if(players.length>=3){
-
-startBtn.classList.remove('disabled');
-
-startBtn.innerHTML='JUGAR';
-
-startBtn.onclick=()=>{
-
-alert(
-players[
-Math.floor(
-Math.random()*players.length
-)
-]
-+
-' ES EL PINGÜINO DE LAVA'
-);
+alert('Jugador2 ES EL PINGÜINO DE LAVA');
 
 startGame();
 
 };
 
-}
+};
 
-}
+window.joinRoom = ()=>{
+
+createRoom();
+
+};
+
+/* START GAME */
 
 function startGame(){
 
@@ -687,9 +692,13 @@ gameStarted=true;
 Object.values(screens)
 .forEach(s=>s.classList.add('hidden'));
 
-topUI.classList.remove('hidden');
+document
+.getElementById('topUI')
+.classList.remove('hidden');
 
 }
+
+/* GAME */
 
 const pathWidth=240;
 
@@ -742,17 +751,44 @@ train.active=true;
 
 train.y=player.y+1800;
 
-alert.style.display='block';
+document
+.getElementById('alert')
+.style.display='block';
 
 setTimeout(()=>{
 
-alert.style.display='none';
+document
+.getElementById('alert')
+.style.display='none';
 
 },2000);
 
 }
 
 },15000);
+
+/* ANIMACION CUBOS */
+
+function cubeAnimation(){
+
+const div =
+document.createElement('div');
+
+div.className='cubeAnim';
+
+div.innerHTML='🧊 +1';
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+
+div.remove();
+
+},1000);
+
+}
+
+/* UPDATE */
 
 function update(){
 
@@ -780,7 +816,9 @@ Math.max(
 Math.min(100,player.slip)
 );
 
-slipFill.style.width=
+document
+.getElementById('slipFill')
+.style.width=
 player.slip+'%';
 
 if(keys['a'])player.vx-=accel;
@@ -828,12 +866,6 @@ player.x += dx>0?40:-40;
 
 }
 
-if(lp.attack>0){
-
-lp.attack--;
-
-}
-
 });
 
 magma.forEach(m=>{
@@ -850,7 +882,11 @@ m.taken=true;
 
 player.coins++;
 
-coins.innerHTML=
+cubeAnimation();
+
+document
+.getElementById('coins')
+.innerHTML=
 '🧊 '+player.coins;
 
 }
@@ -894,10 +930,14 @@ Math.floor(timer%60)
 .toString()
 .padStart(2,'0');
 
-document.getElementById('timer')
-.innerHTML=`${mins}:${secs}`;
+document
+.getElementById('timer')
+.innerHTML=
+`${mins}:${secs}`;
 
 }
+
+/* END GAME */
 
 async function endGame(){
 
@@ -922,6 +962,8 @@ alert(
 location.reload();
 
 }
+
+/* DIBUJAR PINGUINO */
 
 function penguin(x,y,lava=false){
 
@@ -958,6 +1000,8 @@ ctx.lineTo(x+4,y+7);
 ctx.fill();
 
 }
+
+/* DRAW */
 
 function draw(){
 
@@ -1007,6 +1051,8 @@ canvas.height
 
 ctx.fill();
 
+/* CUBOS */
+
 magma.forEach(m=>{
 
 if(m.taken)return;
@@ -1034,6 +1080,8 @@ sy,
 ctx.fill();
 
 });
+
+/* LAVA PENGUINS */
 
 lavaPenguins.forEach(lp=>{
 
@@ -1069,6 +1117,8 @@ penguin(px,sy,true);
 
 });
 
+/* TRAIN */
+
 if(train.active){
 
 const ty=
@@ -1098,9 +1148,12 @@ cx+50,
 ty+40,
 50,
 50
+
 );
 
 }
+
+/* PLAYER */
 
 const py=
 canvas.height-180;
@@ -1122,6 +1175,8 @@ player.lava
 );
 
 }
+
+/* LOOP */
 
 function loop(){
 
