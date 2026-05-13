@@ -7,6 +7,7 @@
 <title>Lava Pynguyn ULTRA</title>
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -30,13 +31,8 @@ display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-background:
-linear-gradient(
-#120000,
-#260000,
-#120000
-);
-z-index:30;
+background:linear-gradient(#120000,#260000,#120000);
+z-index:50;
 }
 
 .hidden{
@@ -46,9 +42,7 @@ display:none!important;
 .title{
 font-size:72px;
 color:#ff7b00;
-text-shadow:
-0 0 10px orange,
-0 0 30px red;
+text-shadow:0 0 10px orange,0 0 30px red;
 margin-bottom:20px;
 }
 
@@ -81,21 +75,21 @@ font-size:18px;
 position:absolute;
 top:10px;
 left:10px;
-z-index:50;
+z-index:100;
 color:white;
 }
 
 #coins{
-font-size:26px;
-margin-top:8px;
+font-size:24px;
+margin-top:6px;
 }
 
 #timer{
-font-size:40px;
+font-size:42px;
 }
 
 #slipBar{
-width:230px;
+width:250px;
 height:20px;
 background:#222;
 border-radius:20px;
@@ -106,74 +100,79 @@ margin-top:12px;
 #slipFill{
 width:0%;
 height:100%;
-background:
-linear-gradient(
-90deg,
-yellow,
-orange,
-red
-);
-}
-
-#chat{
-position:absolute;
-left:10px;
-bottom:10px;
-width:290px;
-height:200px;
-background:rgba(0,0,0,.4);
-border-radius:16px;
-padding:10px;
-color:white;
-z-index:50;
-}
-
-#chatMessages{
-height:140px;
-overflow:auto;
-font-size:14px;
-}
-
-#chatInput{
-width:100%;
-margin-top:10px;
+background:linear-gradient(90deg,yellow,orange,red);
 }
 
 #scoreboard{
 position:absolute;
 right:10px;
 top:100px;
-width:220px;
-background:rgba(0,0,0,.4);
-padding:10px;
-border-radius:16px;
+width:230px;
+background:rgba(0,0,0,.45);
+padding:12px;
+border-radius:18px;
+z-index:100;
 color:white;
-z-index:60;
+}
+
+#chat{
+position:absolute;
+left:10px;
+bottom:10px;
+width:300px;
+height:220px;
+background:rgba(0,0,0,.45);
+border-radius:16px;
+padding:10px;
+z-index:100;
+color:white;
+}
+
+#chatMessages{
+height:160px;
+overflow:auto;
+}
+
+#chatInput{
+width:100%;
+margin-top:6px;
 }
 
 #leaveBtn{
 position:absolute;
 right:10px;
 bottom:10px;
-z-index:60;
+z-index:100;
 }
 
-#shop,
+#alert{
+position:absolute;
+top:30%;
+width:100%;
+text-align:center;
+font-size:70px;
+font-weight:bold;
+color:red;
+display:none;
+z-index:200;
+text-shadow:0 0 20px black;
+}
+
 #skins{
 position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-width:600px;
-height:450px;
+width:650px;
+height:500px;
+overflow:auto;
 background:#220000;
 border:3px solid orange;
 border-radius:24px;
 padding:20px;
 display:none;
-z-index:100;
+z-index:200;
 color:white;
-overflow:auto;
 }
 
 .skinCard{
@@ -183,17 +182,21 @@ border-radius:18px;
 margin-top:16px;
 }
 
-#alert{
+#resultScreen{
 position:absolute;
-width:100%;
-top:35%;
-text-align:center;
-font-size:70px;
-font-weight:bold;
-color:red;
+inset:0;
+background:rgba(0,0,0,.9);
 display:none;
-z-index:100;
-text-shadow:0 0 20px black;
+z-index:300;
+color:white;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+}
+
+#resultTitle{
+font-size:70px;
+margin-bottom:20px;
 }
 
 .cubeAnim{
@@ -204,7 +207,7 @@ transform:translate(-50%,-50%);
 font-size:50px;
 pointer-events:none;
 animation:cubeFly 1s forwards;
-z-index:100;
+z-index:999;
 }
 
 @keyframes cubeFly{
@@ -214,7 +217,7 @@ top:50%;
 opacity:1;
 }
 100%{
-left:80px;
+left:100px;
 top:20px;
 opacity:0;
 }
@@ -227,9 +230,9 @@ opacity:0;
 <div id="authScreen" class="screen">
 <div class="title">LAVA PYNGUYN</div>
 
-<input id="name" placeholder="nombre">
-<input id="email" placeholder="correo">
-<input id="password" type="password" placeholder="contraseña">
+<input id="nameInput" placeholder="nombre">
+<input id="emailInput" placeholder="correo">
+<input id="passwordInput" type="password" placeholder="contraseña">
 
 <button id="registerBtn">CREAR CUENTA</button>
 <button id="loginBtn">INICIAR SESIÓN</button>
@@ -252,7 +255,7 @@ opacity:0;
 
 <button id="createRoomBtn">CREAR PARTIDA</button>
 
-<input id="roomInput" placeholder="código">
+<input id="roomInput" placeholder="CÓDIGO">
 
 <button id="joinRoomBtn">UNIRSE</button>
 
@@ -262,19 +265,11 @@ opacity:0;
 
 <div class="title">SALA</div>
 
-<div id="roomCode"
-style="
-font-size:50px;
-color:gold;
-margin:20px;
-">
-</div>
+<div id="roomCode" style="font-size:50px;color:gold"></div>
 
 <div id="lobbyPlayers"></div>
 
-<button id="startBtn">
-ESPERANDO JUGADORES
-</button>
+<button id="startBtn">ESPERANDO</button>
 
 </div>
 
@@ -283,60 +278,37 @@ ESPERANDO JUGADORES
 <h1>PERSONALIZAR</h1>
 
 <div class="skinCard">
-
-<h2>🐧 Normal</h2>
-
-<button onclick="equipSkin('normal')">
-Equipar
-</button>
-
+<h2>🐧 NORMAL</h2>
+<button onclick="equipSkin('normal')">EQUIPAR</button>
 </div>
 
 <div class="skinCard">
-
-<h2>💰 Pingüino Rico</h2>
-
-<p>1000 cubos</p>
-
-<button onclick="buySkin('rich',1000)">
-Comprar
-</button>
-
+<h2>💰 RICO</h2>
+<p>1000 CUBOS</p>
+<button onclick="buySkin('rich',1000)">COMPRAR</button>
 </div>
 
 <div class="skinCard">
+<h2>🧟 ZOMBIE</h2>
+<p>800 CUBOS</p>
+<button onclick="buySkin('zombie',800)">COMPRAR</button>
+</div>
 
-<h2>🧟 Pingüino Zombie</h2>
+<div class="skinCard">
+<h2>🔥 ROJO</h2>
+<p>50 CUBOS</p>
+<button onclick="buySkin('red',50)">COMPRAR</button>
+</div>
 
-<p>800 cubos</p>
-
-<button onclick="buySkin('zombie',800)">
-Comprar
-</button>
-
+<div class="skinCard">
+<h2>🍔 HAMBRIADO</h2>
+<p>400 CUBOS</p>
+<button onclick="buySkin('hambre',400)">COMPRAR</button>
 </div>
 
 <br>
 
-<button onclick="closeSkins()">
-Cerrar
-</button>
-
-</div>
-
-<div id="shop">
-
-<h1>TIENDA</h1>
-
-<br>
-
-<p>Más skins próximamente...</p>
-
-<br>
-
-<button onclick="closeShop()">
-Cerrar
-</button>
+<button onclick="closeSkins()">CERRAR</button>
 
 </div>
 
@@ -362,31 +334,31 @@ Cerrar
 
 <div id="scoreboard"></div>
 
-<button id="leaveBtn">
-SALIR
-</button>
+<button id="leaveBtn">SALIR</button>
 
-<div id="alert">
-🚨 ALERTA DE TREN 🚨
+<div id="alert">🚨 ALERTA DE TREN 🚨</div>
+
+<div id="resultScreen">
+
+<div id="resultTitle">SOBREVIVIENTES</div>
+
+<div id="resultPlayers"></div>
+
 </div>
 
 <canvas id="game"></canvas>
 
-<audio autoplay loop>
-<source src="music.mp3" type="audio/mpeg">
-</audio>
-
 <script type="module">
 
 import { initializeApp }
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
 
 import {
 getAuth,
 createUserWithEmailAndPassword,
 signInWithEmailAndPassword
 }
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
 
 import {
 getFirestore,
@@ -394,12 +366,11 @@ doc,
 setDoc,
 getDoc,
 updateDoc,
-increment,
 collection,
 onSnapshot,
 serverTimestamp
 }
-from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
 
 const firebaseConfig={
 apiKey:"AIzaSyBy1mulELJTWX0AF-ludd-KCvNysc46miA",
@@ -414,95 +385,134 @@ const app=initializeApp(firebaseConfig)
 const auth=getAuth(app)
 const db=getFirestore(app)
 
-const canvas=document.getElementById('game')
-const ctx=canvas.getContext('2d')
+const canvas=document.getElementById("game")
+const ctx=canvas.getContext("2d")
 
+function resize(){
 canvas.width=innerWidth
 canvas.height=innerHeight
-
-const screens={
-auth:authScreen,
-menu:menuScreen,
-private:privateScreen,
-room:roomScreen
 }
 
-function show(name){
-Object.values(screens)
-.forEach(s=>s.classList.add('hidden'))
+resize()
 
-screens[name].classList.remove('hidden')
-}
-
-let currentRoom=''
-let onlinePlayers=[]
+addEventListener("resize",resize)
 
 const state={
 currentUser:null,
 coins:0,
-timer:150,
+skin:"normal",
 game:false,
-skin:'normal'
+timer:150
 }
 
 const player={
-name:'Player',
+name:"PLAYER",
 x:0,
 y:0,
-slip:0,
+speed:0,
 lava:false,
-speed:0
+slip:0,
+lives:1
+}
+
+let onlinePlayers=[]
+let currentRoom=""
+
+const pathWidth=48
+
+const cubes=[]
+for(let i=0;i<120;i++){
+cubes.push({
+x:(Math.random()-.5)*28,
+y:-i*180,
+taken:false
+})
+}
+
+const lavaPenguins=[]
+
+for(let i=0;i<6;i++){
+lavaPenguins.push({
+side:Math.random()>.5?1:-1,
+y:-Math.random()*6000,
+jump:0,
+jumping:false
+})
+}
+
+const train={
+active:false,
+y:99999
 }
 
 const keys={}
 
-addEventListener('keydown',e=>{
+addEventListener("keydown",e=>{
 keys[e.key.toLowerCase()]=true
 })
 
-addEventListener('keyup',e=>{
+addEventListener("keyup",e=>{
 keys[e.key.toLowerCase()]=false
 })
 
-async function register(){
+function show(screen){
 
-const name=name.value
-const email=email.value
-const password=password.value
+authScreen.classList.add("hidden")
+menuScreen.classList.add("hidden")
+privateScreen.classList.add("hidden")
+roomScreen.classList.add("hidden")
 
-const cred=
-await createUserWithEmailAndPassword(
+screen.classList.remove("hidden")
+
+}
+
+registerBtn.onclick=async()=>{
+
+try{
+
+const email=emailInput.value.trim()
+const password=passwordInput.value.trim()
+const username=nameInput.value.trim()
+
+const cred=await createUserWithEmailAndPassword(
 auth,
 email,
 password
 )
 
 await setDoc(
-doc(db,'users',cred.user.uid),
+doc(db,"users",cred.user.uid),
 {
-name,
-magma:0,
-skin:'normal'
+name:username,
+coins:0,
+skin:"normal"
 }
 )
 
-alert('Cuenta creada')
+alert("CUENTA CREADA")
+
+}catch(err){
+
+alert(err.message)
+
 }
 
-async function login(){
+}
 
-const cred=
-await signInWithEmailAndPassword(
+loginBtn.onclick=async()=>{
+
+try{
+
+const cred=await signInWithEmailAndPassword(
 auth,
-email.value,
-password.value
+emailInput.value.trim(),
+passwordInput.value.trim()
 )
 
 state.currentUser=cred.user
 
-const snap=
-await getDoc(
-doc(db,'users',cred.user.uid)
+const snap=await getDoc(
+doc(db,"users",cred.user.uid)
 )
 
 if(snap.exists()){
@@ -510,180 +520,161 @@ if(snap.exists()){
 const d=snap.data()
 
 player.name=d.name
-state.coins=d.magma||0
-state.skin=d.skin||'normal'
+state.coins=d.coins||0
+state.skin=d.skin||"normal"
 
 }
 
-coins.innerHTML='🧊 '+state.coins
+coins.innerHTML="🧊 "+state.coins
 
-show('menu')
+show(menuScreen)
+
+}catch(err){
+
+alert("ERROR LOGIN")
+
 }
 
-registerBtn.onclick=register
-loginBtn.onclick=login
+}
 
 customBtn.onclick=()=>{
-skins.style.display='block'
+skins.style.display="block"
 }
 
-function closeSkins(){
-skins.style.display='none'
+window.closeSkins=()=>{
+skins.style.display="none"
 }
 
-window.closeSkins=closeSkins
-
-async function equipSkin(s){
+window.equipSkin=async(s)=>{
 
 state.skin=s
 
 await updateDoc(
-doc(db,'users',state.currentUser.uid),
+doc(db,"users",state.currentUser.uid),
 {
 skin:s
 }
 )
 
-alert('Skin equipada')
+alert("EQUIPADA")
+
 }
 
-window.equipSkin=equipSkin
-
-async function buySkin(name,price){
+window.buySkin=async(name,price)=>{
 
 if(state.coins<price){
-alert('No tienes suficientes cubos')
+alert("NO TIENES CUBOS")
 return
 }
 
 state.coins-=price
 
-coins.innerHTML='🧊 '+state.coins
+coins.innerHTML="🧊 "+state.coins
+
+state.skin=name
 
 await updateDoc(
-doc(db,'users',state.currentUser.uid),
+doc(db,"users",state.currentUser.uid),
 {
-magma:state.coins,
+coins:state.coins,
 skin:name
 }
 )
 
-state.skin=name
-
-alert('Comprado')
-}
-
-window.buySkin=buySkin
-
-function randomCode(){
-
-const chars='ABCDEFG123456789'
-
-let c=''
-
-for(let i=0;i<5;i++){
-
-c+=chars[
-Math.floor(Math.random()*chars.length)
-]
+alert("COMPRADA")
 
 }
-
-return c
-}
-
-async function createRoom(){
-
-const code=randomCode()
-
-currentRoom=code
-
-await setDoc(
-doc(db,'rooms',code),
-{
-created:serverTimestamp()
-}
-)
-
-await setDoc(
-doc(
-db,
-'rooms',
-code,
-'players',
-state.currentUser.uid
-),
-{
-name:player.name,
-x:0,
-y:0,
-lava:false,
-skin:state.skin
-}
-)
-
-listenRoom(code)
-
-show('room')
-
-roomCode.innerHTML=code
-}
-
-async function joinRoom(){
-
-const code=
-roomInput.value.toUpperCase()
-
-currentRoom=code
-
-await setDoc(
-doc(
-db,
-'rooms',
-code,
-'players',
-state.currentUser.uid
-),
-{
-name:player.name,
-x:0,
-y:0,
-lava:false,
-skin:state.skin
-}
-)
-
-listenRoom(code)
-
-show('room')
-
-roomCode.innerHTML=code
-}
-
-createRoomBtn.onclick=createRoom
-joinRoomBtn.onclick=joinRoom
 
 privateBtn.onclick=()=>{
-show('private')
-}
-
-publicBtn.onclick=()=>{
-startGame()
+show(privateScreen)
 }
 
 trainingBtn.onclick=()=>{
 startGame()
 }
 
+publicBtn.onclick=()=>{
+startGame()
+}
+
+function randomCode(){
+
+const chars="ABCDEFG123456789"
+
+let code=""
+
+for(let i=0;i<5;i++){
+
+code+=chars[
+Math.floor(Math.random()*chars.length)
+]
+
+}
+
+return code
+
+}
+
+createRoomBtn.onclick=async()=>{
+
+const code=randomCode()
+
+currentRoom=code
+
+await setDoc(
+doc(db,"rooms",code),
+{
+created:serverTimestamp()
+}
+)
+
+await setDoc(
+doc(db,"rooms",code,"players",state.currentUser.uid),
+{
+name:player.name,
+x:0,
+y:0,
+lava:false,
+skin:state.skin
+}
+)
+
+listenRoom(code)
+
+roomCode.innerHTML=code
+
+show(roomScreen)
+
+}
+
+joinRoomBtn.onclick=async()=>{
+
+const code=roomInput.value.toUpperCase()
+
+currentRoom=code
+
+await setDoc(
+doc(db,"rooms",code,"players",state.currentUser.uid),
+{
+name:player.name,
+x:0,
+y:0,
+lava:false,
+skin:state.skin
+}
+)
+
+listenRoom(code)
+
+roomCode.innerHTML=code
+
+show(roomScreen)
+
+}
+
 function listenRoom(code){
 
-const ref=
-collection(
-db,
-'rooms',
-code,
-'players'
-)
+const ref=collection(db,"rooms",code,"players")
 
 onSnapshot(ref,snap=>{
 
@@ -698,88 +689,94 @@ onlinePlayers.push(d.data())
 renderLobby()
 
 })
+
 }
 
 function renderLobby(){
 
-let html=''
+let html=""
 
 onlinePlayers.forEach(p=>{
 
 html+=`
-<div class="playerCard">
-${p.lava?'🔥':'🐧'} ${p.name}
+<div>
+${p.lava?"🔥":"🐧"} ${p.name}
 </div>
 `
 
 })
 
-html+=`
-<br>
-${onlinePlayers.length}/5
-`
+html+=`<br>${onlinePlayers.length}/5`
 
 lobbyPlayers.innerHTML=html
 
 if(onlinePlayers.length>=2){
 
-startBtn.innerHTML='JUGAR'
+startBtn.innerHTML="JUGAR"
 
 startBtn.onclick=()=>{
 startGame()
 }
 
 }
+
 }
 
 function startGame(){
 
 state.game=true
 
-Object.values(screens)
-.forEach(s=>s.classList.add('hidden'))
+menuScreen.classList.add("hidden")
+privateScreen.classList.add("hidden")
+roomScreen.classList.add("hidden")
 
-topUI.classList.remove('hidden')
-chat.classList.remove('hidden')
+topUI.classList.remove("hidden")
+chat.classList.remove("hidden")
+
 }
 
-const pathWidth=55
+chatInput.addEventListener("keydown",e=>{
 
-const cubes=[]
+if(e.key==="Enter"){
 
-for(let i=0;i<80;i++){
+const div=document.createElement("div")
 
-cubes.push({
-x:(Math.random()-.5)*40,
-y:-i*220,
-taken:false
+div.innerHTML=`🐧 ${player.name}: ${chatInput.value}`
+
+chatMessages.appendChild(div)
+
+chatInput.value=""
+
+chatMessages.scrollTop=chatMessages.scrollHeight
+
+}
+
 })
 
+function cubeAnim(){
+
+const div=document.createElement("div")
+
+div.className="cubeAnim"
+
+div.innerHTML="🧊 +1"
+
+document.body.appendChild(div)
+
+setTimeout(()=>{
+div.remove()
+},1000)
+
 }
 
-const lavaPenguins=[]
+function giveCoins(amount){
 
-for(let i=0;i<6;i++){
+state.coins+=amount
 
-lavaPenguins.push({
-side:Math.random()>.5?1:-1,
-y:-Math.random()*5000,
-jump:0,
-jumping:false
-})
+coins.innerHTML="🧊 "+state.coins
 
-}
+cubeAnim()
 
-const bot={
-x:0,
-y:-400,
-lava:false,
-name:'BOT'
-}
-
-let train={
-active:false,
-y:3000
 }
 
 setInterval(()=>{
@@ -788,143 +785,44 @@ if(state.game&&!train.active){
 
 train.active=true
 
-train.y=player.y+2200
+train.y=player.y+1800
 
-alert.style.display='block'
-
-setTimeout(()=>{
-alert.style.display='none'
-},2500)
-
-}
-
-},28000)
-
-const mouse={x:0,y:0}
-
-addEventListener('mousemove',e=>{
-mouse.x=e.clientX
-mouse.y=e.clientY
-})
-
-let attackCooldown=0
-
-addEventListener('keydown',e=>{
-
-if(
-e.code==='Space'
-&&player.lava
-&&attackCooldown<=0
-){
-
-attackCooldown=70
-
-const mx=
-mouse.x-canvas.width/2
-
-const my=
-mouse.y-canvas.height/2
-
-player.x+=mx*0.08
-player.y+=my*0.08
+alert.style.display="block"
 
 setTimeout(()=>{
-
-if(player.x>0){
-player.x=pathWidth/2+55
-}else{
-player.x=-pathWidth/2-55
-}
-
-},240)
+alert.style.display="none"
+},2000)
 
 }
 
-})
-
-chatInput.addEventListener('keydown',e=>{
-
-if(e.key==='Enter'){
-
-const div=
-document.createElement('div')
-
-div.innerHTML=
-`🐧 ${player.name}: ${chatInput.value}`
-
-chatMessages.appendChild(div)
-
-chatInput.value=''
-
-chatMessages.scrollTop=
-chatMessages.scrollHeight
-
-}
-
-})
-
-function cubeAnim(){
-
-const div=document.createElement('div')
-
-div.className='cubeAnim'
-
-div.innerHTML='🧊 +1'
-
-document.body.appendChild(div)
-
-setTimeout(()=>{
-div.remove()
-},1000)
-}
-
-function updateBoard(){
-
-let html='<h3>JUGADORES</h3>'
-
-onlinePlayers.forEach(p=>{
-
-html+=`
-<div>
-${p.lava?'🔥':'🐧'} ${p.name}
-</div>
-`
-
-})
-
-scoreboard.innerHTML=html
-}
+},30000)
 
 function update(){
 
 if(!state.game)return
 
-attackCooldown--
+if(keys["shift"]){
 
-if(keys['shift']){
-
-player.speed=5
-player.slip+=0.45
+player.speed=3.4
+player.slip+=0.35
 
 }else if(
-keys['w']||
-keys['a']||
-keys['s']||
-keys['d']
+keys["w"]||
+keys["a"]||
+keys["d"]
 ){
 
-player.speed=2.7
-player.slip+=0.12
+player.speed=2
+player.slip+=0.1
 
 }else{
 
 player.speed=0
-player.slip-=0.4
+player.slip-=0.35
 
 }
 
-player.slip=
-Math.max(
+player.slip=Math.max(
 0,
 Math.min(100,player.slip)
 )
@@ -932,7 +830,6 @@ Math.min(100,player.slip)
 if(player.slip>=100){
 
 player.lava=true
-player.slip=0
 
 if(player.x>0){
 player.x=pathWidth/2+55
@@ -942,34 +839,31 @@ player.x=-pathWidth/2-55
 
 }
 
-if(keys['a'])player.x-=player.speed*.65
-if(keys['d'])player.x+=player.speed*.65
+if(keys["a"])player.x-=player.speed
+if(keys["d"])player.x+=player.speed
 
-if(keys['w'])player.y-=2.6
-if(keys['s'])player.y+=1.4
+if(keys["w"])player.y-=2
 
-if(
-!player.lava&&
-(
-player.x<-pathWidth/2||
-player.x>pathWidth/2
+if(!player.lava){
+
+player.x=Math.max(
+-pathWidth/2,
+Math.min(pathWidth/2,player.x)
 )
-){
-player.lava=true
+
 }
 
 lavaPenguins.forEach(lp=>{
 
-lp.y+=3
+lp.y+=2.5
 
 if(
-lp.y>player.y-250&&
-lp.y<player.y+250&&
-!lp.jumping
+Math.abs(lp.y-player.y)<260
+&&!lp.jumping
 ){
 
 lp.jumping=true
-lp.jump=70
+lp.jump=65
 
 }
 
@@ -979,58 +873,30 @@ lp.jump-=2
 
 if(lp.jump<=0){
 
-lp.jumping=false
 lp.jump=0
+lp.jumping=false
 
 }
 
 }
 
-const lavaX=
-(pathWidth/2+55)*lp.side
+const lavaX=(pathWidth/2+55)*lp.side
 
 const dx=player.x-lavaX
 const dy=player.y-lp.y
 
 if(
-Math.abs(dx)<55&&
-Math.abs(dy)<55&&
+Math.abs(dx)<40&&
+Math.abs(dy)<40&&
 lp.jumping
 ){
 
-player.x+=lp.side*25
-player.slip+=25
+player.x+=lp.side*22
+player.slip+=30
 
 }
 
 })
-
-if(!currentRoom){
-
-bot.y-=2
-
-if(bot.y<player.y-900){
-bot.y=player.y+500
-}
-
-}
-
-if(train.active){
-
-train.y-=4
-
-if(
-train.y<player.y+100&&
-train.y>player.y-100
-){
-player.lava=true
-}
-
-if(train.y<player.y-3000){
-train.active=false
-}
-
-}
 
 cubes.forEach(c=>{
 
@@ -1040,31 +906,47 @@ const dx=player.x-c.x
 const dy=player.y-c.y
 
 if(
-Math.abs(dx)<20&&
-Math.abs(dy)<20
+Math.abs(dx)<15&&
+Math.abs(dy)<15
 ){
 
 c.taken=true
 
-state.coins++
-
-coins.innerHTML=
-'🧊 '+state.coins
-
-cubeAnim()
+giveCoins(1)
 
 }
 
 })
+
+if(train.active){
+
+train.y-=3
+
+if(
+train.y<player.y+80&&
+train.y>player.y-80
+){
+
+player.lava=true
+
+}
+
+if(train.y<player.y-2000){
+
+train.active=false
+
+}
+
+}
 
 if(currentRoom){
 
 setDoc(
 doc(
 db,
-'rooms',
+"rooms",
 currentRoom,
-'players',
+"players",
 state.currentUser.uid
 ),
 {
@@ -1078,57 +960,123 @@ skin:state.skin
 
 }
 
-updateBoard()
+let alive=onlinePlayers.filter(p=>!p.lava)
+
+if(
+onlinePlayers.length>0&&
+alive.length<=1
+){
+
+finishGame()
+
+}
 
 state.timer-=1/60
 
-const mins=
-Math.floor(state.timer/60)
+if(state.timer<=0){
 
-const secs=
-Math.floor(state.timer%60)
-.toString()
-.padStart(2,'0')
+finishGame()
 
-timer.innerHTML=
-`${mins}:${secs}`
-
-slipFill.style.width=
-player.slip+'%'
 }
 
-function drawPenguin(x,y,lava=false,skin='normal'){
+const mins=Math.floor(state.timer/60)
+
+const secs=Math.floor(state.timer%60)
+.toString()
+.padStart(2,"0")
+
+timer.innerHTML=`${mins}:${secs}`
+
+slipFill.style.width=player.slip+"%"
+
+updateBoard()
+
+}
+
+function finishGame(){
+
+state.game=false
+
+resultScreen.style.display="flex"
+
+let survivors=onlinePlayers.filter(p=>!p.lava)
+
+let html=""
+
+survivors.forEach(s=>{
+
+html+=`
+<div style="font-size:30px;margin:10px">
+🐧 ${s.name}
+</div>
+`
+
+})
+
+if(!player.lava){
+
+giveCoins(10)
+
+}
+
+resultPlayers.innerHTML=html
+
+setTimeout(()=>{
+
+location.reload()
+
+},7000)
+
+}
+
+function updateBoard(){
+
+let html="<h2>JUGADORES</h2>"
+
+onlinePlayers.forEach(p=>{
+
+html+=`
+<div>
+${p.lava?"🔥":"🐧"} ${p.name}
+</div>
+`
+
+})
+
+scoreboard.innerHTML=html
+
+}
+
+function drawPenguin(x,y,lava=false,skin="normal"){
 
 ctx.save()
 
 ctx.translate(x,y)
 
-if(skin==='rich'){
-
-ctx.fillStyle='gold'
-
-}else if(skin==='zombie'){
-
-ctx.fillStyle='#6eff6e'
-
+if(skin==="rich"){
+ctx.fillStyle="gold"
+}else if(skin==="zombie"){
+ctx.fillStyle="#7dff7d"
+}else if(skin==="red"){
+ctx.fillStyle="red"
+}else if(skin==="hambre"){
+ctx.fillStyle="#d98b2b"
 }else{
-
-ctx.fillStyle=lava?'#ff4d00':'white'
-
+ctx.fillStyle=lava?"#ff5e00":"white"
 }
 
 ctx.beginPath()
 ctx.ellipse(0,0,16,22,0,0,6.28)
 ctx.fill()
 
-ctx.fillStyle='black'
+ctx.fillStyle="black"
 
 ctx.beginPath()
-ctx.arc(-4,-5,2,0,6.28)
-ctx.arc(4,-5,2,0,6.28)
+ctx.arc(-4,-4,2,0,6.28)
+ctx.arc(4,-4,2,0,6.28)
 ctx.fill()
 
-ctx.fillStyle='orange'
+ctx.fillStyle="orange"
 
 ctx.beginPath()
 ctx.moveTo(0,2)
@@ -1137,106 +1085,66 @@ ctx.lineTo(4,7)
 ctx.fill()
 
 ctx.restore()
+
 }
 
 function draw(){
 
-ctx.clearRect(
-0,
-0,
-canvas.width,
-canvas.height
-)
-
-ctx.save()
-
-ctx.translate(
-Math.sin(Date.now()*0.002)*1.5,
-0
-)
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
 for(let y=0;y<canvas.height;y+=40){
 
-ctx.fillStyle=
-`rgb(
-${180+Math.sin(Date.now()*0.002+y)*40},
-40,
-0
-)`
+ctx.fillStyle=`rgb(${160+Math.sin(Date.now()*0.002+y)*30},40,0)`
 
-ctx.fillRect(
-0,
-y,
-canvas.width,
-40
-)
-
-}
-
-for(let i=0;i<30;i++){
-
-ctx.fillStyle='rgba(255,120,0,.15)'
-
-ctx.beginPath()
-
-ctx.arc(
-Math.random()*canvas.width,
-(Date.now()*0.05+i*40)%canvas.height,
-3,
-0,
-6.28
-)
-
-ctx.fill()
+ctx.fillRect(0,y,canvas.width,40)
 
 }
 
 const cx=canvas.width/2
 
-const dirt=
-ctx.createLinearGradient(
-0,
-0,
-0,
-canvas.height
-)
-
-dirt.addColorStop(0,'#6b4423')
-dirt.addColorStop(1,'#2b1308')
-
-ctx.fillStyle=dirt
+ctx.fillStyle="#5b3418"
 
 ctx.beginPath()
 
 ctx.moveTo(cx-pathWidth/2,0)
 ctx.lineTo(cx+pathWidth/2,0)
-ctx.lineTo(cx+pathWidth/2+25,canvas.height)
-ctx.lineTo(cx-pathWidth/2-25,canvas.height)
+ctx.lineTo(cx+pathWidth/2+15,canvas.height)
+ctx.lineTo(cx-pathWidth/2-15,canvas.height)
 
 ctx.fill()
+
+for(let i=0;i<80;i++){
+
+ctx.fillStyle="rgba(255,120,0,.08)"
+
+ctx.beginPath()
+
+ctx.arc(
+(Math.sin(i*999)+1)*canvas.width/2,
+(Date.now()*0.05+i*80)%canvas.height,
+2,
+0,
+6.28
+)
+
+ctx.fill()
+
+}
 
 cubes.forEach(c=>{
 
 if(c.taken)return
 
-const sy=
-c.y-player.y+
-canvas.height/2
+const sy=c.y-player.y+canvas.height/2
 
 ctx.shadowBlur=20
-ctx.shadowColor='gold'
+ctx.shadowColor="gold"
 
-ctx.fillStyle='gold'
+ctx.fillStyle="gold"
 
 ctx.beginPath()
 
-ctx.arc(
-cx+c.x,
-sy,
-10,
-0,
-6.28
-)
+ctx.arc(cx+c.x,sy,8,0,6.28)
 
 ctx.fill()
 
@@ -1244,25 +1152,15 @@ ctx.fill()
 
 lavaPenguins.forEach(lp=>{
 
-const sy=
-lp.y-player.y+
-canvas.height/2
+const sy=lp.y-player.y+canvas.height/2
 
-const lavaX=
-(pathWidth/2+55)*lp.side
+const lavaX=(pathWidth/2+55)*lp.side
 
-ctx.fillStyle=
-'rgba(255,80,0,.2)'
+ctx.fillStyle="rgba(255,70,0,.2)"
 
 ctx.beginPath()
 
-ctx.arc(
-cx+lavaX,
-sy+20,
-35,
-0,
-6.28
-)
+ctx.arc(cx+lavaX,sy+20,35,0,6.28)
 
 ctx.fill()
 
@@ -1274,82 +1172,41 @@ true
 
 })
 
-if(!currentRoom){
-
-const by=
-bot.y-player.y+
-canvas.height/2
-
-ctx.fillStyle='white'
-ctx.font='18px Arial'
-
-ctx.fillText(
-bot.name,
-cx-15,
-by-30
-)
-
-drawPenguin(
-cx,
-by,
-bot.lava
-)
-
-}
-
 onlinePlayers.forEach(op=>{
 
 if(op.name===player.name)return
 
-const sy=
-op.y-player.y+
-canvas.height/2
+const sy=op.y-player.y+canvas.height/2
 
 const px=cx+op.x
 
-ctx.fillStyle='white'
-ctx.font='18px Arial'
+ctx.fillStyle="white"
+ctx.font="18px Arial"
 
-ctx.fillText(
-op.name,
-px-20,
-sy-30
-)
+ctx.fillText(op.name,px-20,sy-30)
 
-drawPenguin(
-px,
-sy,
-op.lava,
-op.skin
-)
+drawPenguin(px,sy,op.lava,op.skin)
 
 })
 
 if(train.active){
 
-const ty=
-train.y-player.y+
-canvas.height/2
+const ty=train.y-player.y+canvas.height/2
 
-ctx.fillStyle='#555'
+ctx.fillStyle="#444"
 
-ctx.fillRect(
-cx-120,
-ty,
-240,
-180
-)
+ctx.fillRect(cx-120,ty,240,140)
 
-ctx.fillStyle='yellow'
+ctx.fillStyle="yellow"
 
-ctx.fillRect(cx-70,ty+35,40,40)
-ctx.fillRect(cx+30,ty+35,40,40)
+ctx.fillRect(cx-70,ty+30,40,40)
+ctx.fillRect(cx+30,ty+30,40,40)
 
 }
 
 const py=canvas.height-170
 
-ctx.fillStyle='rgba(0,0,0,.25)'
+ctx.fillStyle="rgba(0,0,0,.3)"
 
 ctx.beginPath()
 
@@ -1365,8 +1222,8 @@ py+22,
 
 ctx.fill()
 
-ctx.fillStyle='white'
-ctx.font='18px Arial'
+ctx.fillStyle="white"
+ctx.font="18px Arial"
 
 ctx.fillText(
 player.name,
@@ -1381,8 +1238,6 @@ player.lava,
 state.skin
 )
 
-ctx.restore()
-
 }
 
 leaveBtn.onclick=()=>{
@@ -1395,6 +1250,7 @@ update()
 draw()
 
 requestAnimationFrame(loop)
+
 }
 
 loop()
