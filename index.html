@@ -3,11 +3,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Lava Pynguyn</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -18,12 +17,10 @@ font-family:Arial,sans-serif;
 body{
 overflow:hidden;
 background:#120000;
-color:white;
 }
 
 canvas{
 display:block;
-background:#1a0000;
 }
 
 .screen{
@@ -33,7 +30,7 @@ display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-background:linear-gradient(#120000,#300000);
+background:linear-gradient(#120000,#2b0000);
 z-index:20;
 }
 
@@ -42,29 +39,23 @@ display:none!important;
 }
 
 .title{
-font-size:72px;
-margin-bottom:20px;
+font-size:70px;
 color:#ff7b00;
 text-shadow:0 0 25px red;
-}
-
-.subtitle{
-font-size:22px;
-margin-bottom:25px;
-opacity:.8;
+margin-bottom:20px;
 }
 
 input{
 width:320px;
 padding:14px;
-margin:8px;
+margin:10px;
 border:none;
-border-radius:14px;
+border-radius:16px;
 font-size:18px;
 }
 
 button{
-padding:14px 28px;
+padding:14px 26px;
 margin:10px;
 font-size:20px;
 border:none;
@@ -79,34 +70,30 @@ button:hover{
 transform:scale(1.05);
 }
 
-.disabled{
-background:#555!important;
-cursor:not-allowed;
-}
-
 #topUI{
 position:absolute;
 top:10px;
 left:10px;
+color:white;
 z-index:50;
 }
 
 #coins{
 font-size:24px;
-margin-top:10px;
+margin-top:8px;
 }
 
 #timer{
-font-size:32px;
+font-size:36px;
 }
 
 #slipBar{
-width:240px;
-height:22px;
-background:#333;
+width:220px;
+height:20px;
+background:#222;
 border-radius:20px;
 overflow:hidden;
-margin-top:12px;
+margin-top:10px;
 }
 
 #slipFill{
@@ -117,8 +104,8 @@ background:orange;
 
 #alert{
 position:absolute;
-top:35%;
 width:100%;
+top:35%;
 text-align:center;
 font-size:70px;
 font-weight:bold;
@@ -132,9 +119,8 @@ z-index:100;
 position:absolute;
 top:12px;
 right:12px;
-z-index:60;
+z-index:50;
 font-size:24px;
-padding:10px 18px;
 }
 
 #shop{
@@ -142,34 +128,20 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-width:650px;
-height:500px;
+width:550px;
+height:420px;
 background:#220000;
 border:3px solid orange;
-border-radius:24px;
+border-radius:20px;
 padding:20px;
 display:none;
 z-index:80;
-overflow:auto;
-}
-
-.shopGrid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:15px;
-margin-top:20px;
-}
-
-.shopItem{
-background:#330000;
-padding:20px;
-border-radius:16px;
-min-height:120px;
+color:white;
 }
 
 .playerCard{
 padding:10px;
-background:#2d0000;
+background:#2b0000;
 border-radius:12px;
 margin:6px;
 font-size:20px;
@@ -181,10 +153,11 @@ left:10px;
 bottom:10px;
 width:280px;
 height:180px;
-background:rgba(0,0,0,.45);
+background:rgba(0,0,0,.4);
 border-radius:14px;
 padding:10px;
-z-index:40;
+z-index:50;
+color:white;
 }
 
 #chatMessages{
@@ -203,10 +176,10 @@ position:absolute;
 left:50%;
 top:50%;
 transform:translate(-50%,-50%);
-font-size:50px;
-z-index:120;
+font-size:52px;
 pointer-events:none;
 animation:cubeFly 1s forwards;
+z-index:100;
 }
 
 @keyframes cubeFly{
@@ -214,13 +187,11 @@ animation:cubeFly 1s forwards;
 left:50%;
 top:50%;
 opacity:1;
-transform:scale(1);
 }
 100%{
 left:80px;
-top:25px;
+top:20px;
 opacity:0;
-transform:scale(.2);
 }
 }
 
@@ -230,12 +201,9 @@ transform:scale(.2);
 
 <div id="authScreen" class="screen">
 <div class="title">LAVA PYNGUYN</div>
-<div class="subtitle">Escapa del tren y de los pingüinos de lava</div>
-
 <input id="name" placeholder="nombre">
 <input id="email" placeholder="correo">
 <input id="password" type="password" placeholder="contraseña">
-
 <button id="registerBtn">CREAR CUENTA</button>
 <button id="loginBtn">INICIAR SESIÓN</button>
 </div>
@@ -247,11 +215,6 @@ transform:scale(.2);
 <button id="trainingBtn">ENTRENAMIENTO</button>
 </div>
 
-<div id="publicScreen" class="screen hidden">
-<div class="title">BUSCANDO PARTIDA</div>
-<div id="publicCount">1/5</div>
-</div>
-
 <div id="privateScreen" class="screen hidden">
 <div class="title">PARTIDA PRIVADA</div>
 <button id="createRoomBtn">CREAR PARTIDA</button>
@@ -261,21 +224,18 @@ transform:scale(.2);
 
 <div id="roomScreen" class="screen hidden">
 <div class="title">SALA</div>
-<div id="roomCode" style="font-size:48px;color:gold;">AAAAA</div>
+<div id="roomCode" style="font-size:50px;color:gold"></div>
 <div id="lobbyPlayers"></div>
-<button id="startBtn" class="disabled">MÍNIMO 3 JUGADORES</button>
+<button id="startBtn">ESPERANDO JUGADORES</button>
 </div>
 
 <button id="cartBtn" class="hidden">🛒</button>
 
 <div id="shop">
 <h1>TIENDA</h1>
-<div class="shopGrid">
-<div class="shopItem">Skin Pingüino Azul<br><br>Próximamente</div>
-<div class="shopItem">Sombrero Volcánico<br><br>Próximamente</div>
-<div class="shopItem">Traje de Lava<br><br>Próximamente</div>
-<div class="shopItem">Rastro de Fuego<br><br>Próximamente</div>
-</div>
+<br>
+<p>Skins próximamente...</p>
+<br>
 <button id="closeShop">Cerrar</button>
 </div>
 
@@ -310,7 +270,11 @@ doc,
 setDoc,
 getDoc,
 updateDoc,
-increment
+increment,
+collection,
+onSnapshot,
+serverTimestamp,
+addDoc
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
 
 const firebaseConfig={
@@ -335,7 +299,6 @@ canvas.height=innerHeight
 const screens={
 auth:document.getElementById('authScreen'),
 menu:document.getElementById('menuScreen'),
-public:document.getElementById('publicScreen'),
 private:document.getElementById('privateScreen'),
 room:document.getElementById('roomScreen')
 }
@@ -345,26 +308,24 @@ Object.values(screens).forEach(s=>s.classList.add('hidden'))
 screens[name].classList.remove('hidden')
 }
 
+let currentRoom=''
+let onlinePlayers=[]
+
 const state={
 currentUser:null,
-roomId:'',
-gameStarted:false,
 coins:0,
+gameStarted:false,
 timer:150,
-playersInLobby:1,
-messages:[]
+private:false
 }
 
 const player={
 name:'Player',
 x:0,
 y:0,
-vx:0,
-vy:0,
 slip:0,
 lava:false,
-speed:5,
-rotation:0
+speed:5
 }
 
 const keys={}
@@ -383,23 +344,16 @@ const name=document.getElementById('name').value
 const email=document.getElementById('email').value
 const password=document.getElementById('password').value
 
-if(!name||!email||!password){
-alert('Completa todo')
-return
-}
-
 try{
 
 const cred=await createUserWithEmailAndPassword(auth,email,password)
 
 await setDoc(doc(db,'users',cred.user.uid),{
 name:name,
-magma:0,
-wins:0,
-skin:'default'
+magma:0
 })
 
-alert('Cuenta creada correctamente')
+alert('Cuenta creada')
 
 }catch(err){
 alert(err.message)
@@ -459,88 +413,118 @@ code+=chars[Math.floor(Math.random()*chars.length)]
 return code
 }
 
-document.getElementById('publicBtn').onclick=()=>{
-show('public')
+async function createRoom(){
 
-let current=1
+state.private=true
 
-const matchmaking=setInterval(()=>{
-current++
+const code=randomCode()
+currentRoom=code
 
-document.getElementById('publicCount').innerHTML=current+'/5'
+await setDoc(doc(db,'rooms',code),{
+created:serverTimestamp()
+})
 
-if(current>=5){
-clearInterval(matchmaking)
-startGame()
+await setDoc(
+doc(db,'rooms',code,'players',state.currentUser.uid),
+{
+name:player.name,
+x:0,
+y:0,
+lava:false
+}
+)
+
+listenRoom(code)
+
+show('room')
+
+document.getElementById('roomCode').innerHTML=code
 }
 
-},1000)
+async function joinRoom(){
+
+state.private=true
+
+const code=document.getElementById('roomInput').value.toUpperCase()
+
+currentRoom=code
+
+await setDoc(
+doc(db,'rooms',code,'players',state.currentUser.uid),
+{
+name:player.name,
+x:0,
+y:0,
+lava:false
+}
+)
+
+listenRoom(code)
+
+show('room')
+
+document.getElementById('roomCode').innerHTML=code
+}
+
+function listenRoom(code){
+
+const ref=collection(db,'rooms',code,'players')
+
+onSnapshot(ref,snap=>{
+
+onlinePlayers=[]
+
+snap.forEach(d=>{
+onlinePlayers.push(d.data())
+})
+
+renderLobby()
+
+})
+}
+
+function renderLobby(){
+
+const lobby=document.getElementById('lobbyPlayers')
+
+let html=''
+
+onlinePlayers.forEach(p=>{
+html+=`<div class="playerCard">🐧 ${p.name}</div>`
+})
+
+html+=`<br>${onlinePlayers.length}/5`
+
+lobby.innerHTML=html
+
+const btn=document.getElementById('startBtn')
+
+if(onlinePlayers.length>=2){
+btn.innerHTML='JUGAR'
+btn.onclick=()=>startGame()
+}
 }
 
 document.getElementById('privateBtn').onclick=()=>{
 show('private')
 }
 
+document.getElementById('createRoomBtn').onclick=createRoom
+
+document.getElementById('joinRoomBtn').onclick=joinRoom
+
 document.getElementById('trainingBtn').onclick=()=>{
+state.private=false
 startGame()
 }
 
-document.getElementById('createRoomBtn').onclick=()=>{
-state.roomId=randomCode()
-openRoom([
-player.name,
-'Jugador2',
-'Jugador3'
-])
-}
-
-document.getElementById('joinRoomBtn').onclick=()=>{
-state.roomId=document.getElementById('roomInput').value.toUpperCase()
-
-if(state.roomId.length<5){
-alert('Código inválido')
-return
-}
-
-openRoom([
-player.name,
-'Jugador2',
-'Jugador3',
-'Jugador4'
-])
-}
-
-function openRoom(players){
-show('room')
-
-document.getElementById('roomCode').innerHTML=state.roomId
-
-const lobby=document.getElementById('lobbyPlayers')
-
-let html=''
-
-players.forEach(p=>{
-html+=`<div class="playerCard">🐧 ${p}</div>`
-})
-
-html+=`<br>${players.length}/5`
-
-lobby.innerHTML=html
-
-const btn=document.getElementById('startBtn')
-
-if(players.length>=3){
-btn.classList.remove('disabled')
-btn.innerHTML='JUGAR'
-btn.onclick=()=>{
-const lava=players[Math.floor(Math.random()*players.length)]
-alert(lava+' ES EL PINGÜINO DE LAVA')
+document.getElementById('publicBtn').onclick=()=>{
+state.private=false
 startGame()
-}
-}
 }
 
 function startGame(){
+
 state.gameStarted=true
 
 Object.values(screens).forEach(s=>s.classList.add('hidden'))
@@ -549,28 +533,33 @@ document.getElementById('topUI').classList.remove('hidden')
 document.getElementById('chat').classList.remove('hidden')
 }
 
-const pathWidth=260
+const pathWidth=100
 
 const cubes=[]
-for(let i=0;i<80;i++){
+for(let i=0;i<70;i++){
 cubes.push({
-x:(Math.random()-0.5)*180,
-y:-i*260,
+x:(Math.random()-.5)*70,
+y:-i*250,
 taken:false
 })
 }
 
 const lavaPenguins=[]
-for(let i=0;i<12;i++){
+for(let i=0;i<6;i++){
 lavaPenguins.push({
-angle:Math.random()*6.28,
-distance:190+Math.random()*90,
-y:Math.random()*9000,
-speed:0.01+Math.random()*0.02
+side:Math.random()>.5?1:-1,
+y:-Math.random()*5000,
+jump:0,
+jumping:false
 })
 }
 
-const particles=[]
+const bot={
+active:true,
+x:0,
+y:-300,
+name:'BOT'
+}
 
 let train={
 active:false,
@@ -578,7 +567,9 @@ y:2000
 }
 
 setInterval(()=>{
+
 if(state.gameStarted&&!train.active){
+
 train.active=true
 train.y=player.y+1800
 
@@ -588,8 +579,10 @@ alert.style.display='block'
 setTimeout(()=>{
 alert.style.display='none'
 },2000)
+
 }
-},18000)
+
+},20000)
 
 function cubeAnimation(){
 const div=document.createElement('div')
@@ -599,41 +592,108 @@ document.body.appendChild(div)
 setTimeout(()=>div.remove(),1000)
 }
 
+const chatInput=document.getElementById('chatInput')
+const chatMessages=document.getElementById('chatMessages')
+
+chatInput.addEventListener('keydown',async e=>{
+
+if(e.key==='Enter'){
+
+const text=chatInput.value
+
+if(text==='')return
+
+const div=document.createElement('div')
+div.innerHTML=`🐧 ${player.name}: ${text}`
+chatMessages.appendChild(div)
+
+chatInput.value=''
+chatMessages.scrollTop=chatMessages.scrollHeight
+
+if(currentRoom){
+
+await addDoc(
+collection(db,'rooms',currentRoom,'chat'),
+{
+name:player.name,
+text:text,
+time:Date.now()
+}
+)
+
+}
+
+}
+})
+
 function update(){
 
 if(!state.gameStarted)return
 
-let accel=.4
-let max=5
-
 if(keys['shift']){
-max=9
-player.slip+=.5
+player.speed=9
+player.slip+=0.45
 }else{
-player.slip-=.25
+player.speed=5
+player.slip-=0.25
 }
 
 player.slip=Math.max(0,Math.min(100,player.slip))
 
-document.getElementById('slipFill').style.width=player.slip+'%'
+if(player.slip>=100){
+player.lava=true
+}
 
-if(keys['a'])player.vx-=accel
-if(keys['d'])player.vx+=accel
-if(keys['w'])player.vy-=accel
-if(keys['s'])player.vy+=accel
+if(keys['a'])player.x-=player.speed
+if(keys['d'])player.x+=player.speed
 
-player.vx*=.92
-player.vy*=.92
-
-player.vx=Math.max(-max,Math.min(max,player.vx))
-player.vy=Math.max(-max,Math.min(max,player.vy))
-
-player.x+=player.vx
-player.y+=player.vy
+if(keys['w'])player.y-=7
+if(keys['s'])player.y+=4
 
 if(player.x<-pathWidth/2||player.x>pathWidth/2){
 player.lava=true
 }
+
+bot.y-=4
+
+if(bot.y<player.y-1000){
+bot.y=player.y+500
+}
+
+lavaPenguins.forEach(lp=>{
+
+lp.y+=3
+
+if(lp.y>player.y-300&&lp.y<player.y+300&&!lp.jumping){
+
+lp.jumping=true
+lp.jump=35
+
+}
+
+if(lp.jumping){
+
+lp.jump-=2
+
+if(lp.jump<=0){
+
+lp.jumping=false
+lp.jump=0
+
+}
+
+}
+
+const lavaX=(pathWidth/2+55)*lp.side
+
+const dx=player.x-lavaX
+const dy=player.y-lp.y
+
+if(Math.abs(dx)<40&&Math.abs(dy)<40&&lp.jumping){
+player.x+=lp.side*20
+}
+
+})
 
 cubes.forEach(c=>{
 
@@ -642,40 +702,34 @@ if(c.taken)return
 const dx=player.x-c.x
 const dy=player.y-c.y
 
-if(Math.abs(dx)<22&&Math.abs(dy)<22){
+if(Math.abs(dx)<20&&Math.abs(dy)<20){
 
 c.taken=true
 state.coins++
 
-cubeAnimation()
-
 document.getElementById('coins').innerHTML='🧊 '+state.coins
 
-for(let i=0;i<6;i++){
-particles.push({
-x:c.x,
-y:c.y,
-vx:(Math.random()-.5)*4,
-vy:(Math.random()-.5)*4,
-life:30
-})
-}
+cubeAnimation()
+
 }
 })
 
-particles.forEach(p=>{
-p.x+=p.vx
-p.y+=p.vy
-p.life--
-})
+if(currentRoom){
 
-for(let i=particles.length-1;i>=0;i--){
-if(particles[i].life<=0){
-particles.splice(i,1)
+setDoc(
+doc(db,'rooms',currentRoom,'players',state.currentUser.uid),
+{
+name:player.name,
+x:player.x,
+y:player.y,
+lava:player.lava
 }
+)
+
 }
 
 if(train.active){
+
 train.y-=12
 
 if(train.y<player.y+150&&train.y>player.y-150){
@@ -685,6 +739,7 @@ player.lava=true
 if(train.y<player.y-3000){
 train.active=false
 }
+
 }
 
 if(state.timer>0){
@@ -697,6 +752,8 @@ const mins=Math.floor(state.timer/60)
 const secs=Math.floor(state.timer%60).toString().padStart(2,'0')
 
 document.getElementById('timer').innerHTML=`${mins}:${secs}`
+
+document.getElementById('slipFill').style.width=player.slip+'%'
 }
 
 async function endGame(){
@@ -709,7 +766,8 @@ await updateDoc(doc(db,'users',state.currentUser.uid),{
 magma:increment(10)
 })
 
-alert('GANASTE 10 CUBOS DE MAGMA')
+alert('GANASTE 10 CUBOS')
+
 }
 
 location.reload()
@@ -722,13 +780,13 @@ ctx.translate(x,y)
 
 ctx.fillStyle=lava?'#ff4d00':'white'
 ctx.beginPath()
-ctx.ellipse(0,0,18,24,0,0,6.28)
+ctx.ellipse(0,0,16,22,0,0,6.28)
 ctx.fill()
 
 ctx.fillStyle='black'
 ctx.beginPath()
-ctx.arc(-5,-5,2,0,6.28)
-ctx.arc(5,-5,2,0,6.28)
+ctx.arc(-4,-5,2,0,6.28)
+ctx.arc(4,-5,2,0,6.28)
 ctx.fill()
 
 ctx.fillStyle='orange'
@@ -745,25 +803,28 @@ function draw(){
 
 ctx.clearRect(0,0,canvas.width,canvas.height)
 
-const g=ctx.createLinearGradient(0,0,0,canvas.height)
-g.addColorStop(0,'#ff5a00')
-g.addColorStop(1,'#551100')
-ctx.fillStyle=g
-ctx.fillRect(0,0,canvas.width,canvas.height)
+for(let y=0;y<canvas.height;y+=40){
+ctx.fillStyle=`rgb(${180+Math.sin(Date.now()*0.002+y)*40},40,0)`
+ctx.fillRect(0,y,canvas.width,40)
+}
 
 const cx=canvas.width/2
 
-ctx.fillStyle='#523019'
+const dirt=ctx.createLinearGradient(0,0,0,canvas.height)
+dirt.addColorStop(0,'#6b4423')
+dirt.addColorStop(1,'#3a1f0f')
+ctx.fillStyle=dirt
+
 ctx.beginPath()
 ctx.moveTo(cx-pathWidth/2,0)
 ctx.lineTo(cx+pathWidth/2,0)
-ctx.lineTo(cx+pathWidth/2+140,canvas.height)
-ctx.lineTo(cx-pathWidth/2-140,canvas.height)
+ctx.lineTo(cx+pathWidth/2+30,canvas.height)
+ctx.lineTo(cx-pathWidth/2-30,canvas.height)
 ctx.fill()
 
-for(let i=0;i<40;i++){
+for(let i=0;i<60;i++){
 ctx.fillStyle='rgba(0,0,0,.08)'
-ctx.fillRect(cx-110+Math.sin(i)*25,i*45,220,18)
+ctx.fillRect(cx-45+Math.sin(i)*10,i*40,90,10)
 }
 
 cubes.forEach(c=>{
@@ -772,60 +833,84 @@ if(c.taken)return
 
 const sy=c.y-player.y+canvas.height/2
 
-if(sy<-50||sy>canvas.height+50)return
-
 ctx.fillStyle='gold'
 ctx.beginPath()
 ctx.arc(cx+c.x,sy,10,0,6.28)
 ctx.fill()
 })
 
-particles.forEach(p=>{
-const sy=p.y-player.y+canvas.height/2
-ctx.fillStyle='orange'
-ctx.fillRect(cx+p.x,sy,4,4)
-})
-
 lavaPenguins.forEach(lp=>{
 
 const sy=lp.y-player.y+canvas.height/2
 
-if(sy<-100||sy>canvas.height+100)return
+const lavaX=(pathWidth/2+55)*lp.side
 
-const px=cx+Math.sin(lp.angle)*lp.distance
-
-ctx.fillStyle='rgba(255,80,0,.35)'
+ctx.fillStyle='rgba(255,80,0,.25)'
 ctx.beginPath()
-ctx.arc(px,sy+18,35,0,6.28)
+ctx.arc(cx+lavaX,sy+20,35,0,6.28)
 ctx.fill()
 
-drawPenguin(px,sy,true)
+drawPenguin(cx+lavaX,sy-lp.jump,true)
+
+})
+
+if(!state.private){
+
+const botY=bot.y-player.y+canvas.height/2
+
+ctx.fillStyle='white'
+ctx.font='18px Arial'
+ctx.fillText(bot.name,cx+bot.x-15,botY-30)
+
+drawPenguin(cx+bot.x,botY,false)
+
+}
+
+onlinePlayers.forEach(op=>{
+
+if(op.name===player.name)return
+
+const sy=op.y-player.y+canvas.height/2
+const px=cx+op.x
+
+ctx.fillStyle='white'
+ctx.font='18px Arial'
+ctx.fillText(op.name,px-20,sy-30)
+
+drawPenguin(px,sy,op.lava)
+
 })
 
 if(train.active){
 
 const ty=train.y-player.y+canvas.height/2
 
-ctx.fillStyle='gray'
-ctx.fillRect(cx-150,ty,300,240)
+ctx.fillStyle='#555'
+ctx.fillRect(cx-120,ty,240,180)
 
 ctx.fillStyle='yellow'
-ctx.fillRect(cx-100,ty+40,50,50)
-ctx.fillRect(cx+50,ty+40,50,50)
+ctx.fillRect(cx-70,ty+35,40,40)
+ctx.fillRect(cx+30,ty+35,40,40)
+
 }
 
-const py=canvas.height-180
+const py=canvas.height-170
+
+ctx.fillStyle='rgba(0,0,0,.25)'
+ctx.beginPath()
+ctx.ellipse(cx+player.x,py+22,18,8,0,0,6.28)
+ctx.fill()
 
 ctx.fillStyle='white'
-ctx.font='20px Arial'
-ctx.fillText(player.name,cx+player.x-20,py-35)
+ctx.font='18px Arial'
+ctx.fillText(player.name,cx+player.x-20,py-30)
 
 drawPenguin(cx+player.x,py,player.lava)
 
 if(player.lava){
 ctx.fillStyle='white'
-ctx.font='58px Arial'
-ctx.fillText('TE VOLVISTE PINGÜINO DE LAVA',80,canvas.height/2)
+ctx.font='50px Arial'
+ctx.fillText('TE VOLVISTE PINGÜINO DE LAVA',50,canvas.height/2)
 }
 }
 
@@ -838,6 +923,5 @@ requestAnimationFrame(loop)
 loop()
 
 </script>
-
 </body>
 </html>
