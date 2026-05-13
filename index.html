@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +6,6 @@
 <title>Lava Pynguyn ULTRA</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -159,30 +157,6 @@ bottom:10px;
 z-index:60;
 }
 
-#skins{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:600px;
-height:450px;
-background:#220000;
-border:3px solid orange;
-border-radius:24px;
-padding:20px;
-display:none;
-z-index:100;
-color:white;
-overflow:auto;
-}
-
-.skinCard{
-background:#2b0000;
-padding:16px;
-border-radius:18px;
-margin-top:16px;
-}
-
 #alert{
 position:absolute;
 width:100%;
@@ -220,6 +194,19 @@ opacity:0;
 }
 }
 
+#deathScreen{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,.8);
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+z-index:999;
+color:white;
+font-size:50px;
+}
+
 </style>
 </head>
 <body>
@@ -236,112 +223,24 @@ opacity:0;
 </div>
 
 <div id="menuScreen" class="screen hidden">
-
 <div class="title">MENÚ</div>
 
 <button id="publicBtn">PARTIDA PÚBLICA</button>
-<button id="privateBtn">PARTIDA PRIVADA</button>
 <button id="trainingBtn">ENTRENAMIENTO</button>
-<button id="customBtn">PERSONALIZAR</button>
-
-</div>
-
-<div id="privateScreen" class="screen hidden">
-
-<div class="title">PARTIDA PRIVADA</div>
-
-<button id="createRoomBtn">CREAR PARTIDA</button>
-
-<input id="roomInput" placeholder="código">
-
-<button id="joinRoomBtn">UNIRSE</button>
-
-</div>
-
-<div id="roomScreen" class="screen hidden">
-
-<div class="title">SALA</div>
-
-<div id="roomCode"
-style="
-font-size:50px;
-color:gold;
-margin:20px;
-">
-</div>
-
-<div id="lobbyPlayers"></div>
-
-<button id="startBtn">
-ESPERANDO JUGADORES
-</button>
-
-</div>
-
-<div id="skins">
-
-<h1>PERSONALIZAR</h1>
-
-<div class="skinCard">
-
-<h2>🐧 Normal</h2>
-
-<button onclick="equipSkin('normal')">
-Equipar
-</button>
-
-</div>
-
-<div class="skinCard">
-
-<h2>💰 Pingüino Rico</h2>
-
-<p>1000 cubos</p>
-
-<button onclick="buySkin('rich',1000)">
-Comprar
-</button>
-
-</div>
-
-<div class="skinCard">
-
-<h2>🧟 Pingüino Zombie</h2>
-
-<p>800 cubos</p>
-
-<button onclick="buySkin('zombie',800)">
-Comprar
-</button>
-
-</div>
-
-<br>
-
-<button onclick="closeSkins()">
-Cerrar
-</button>
-
 </div>
 
 <div id="topUI" class="hidden">
-
 <div id="timer">2:30</div>
-
 <div id="coins">🧊 0</div>
 
 <div id="slipBar">
 <div id="slipFill"></div>
 </div>
-
 </div>
 
 <div id="chat" class="hidden">
-
 <div id="chatMessages"></div>
-
 <input id="chatInput" placeholder="mensaje...">
-
 </div>
 
 <div id="scoreboard"></div>
@@ -352,6 +251,11 @@ SALIR
 
 <div id="alert">
 🚨 ALERTA DE TREN 🚨
+</div>
+
+<div id="deathScreen">
+<div>🔥 TE CAÍSTE A LA LAVA 🔥</div>
+<button onclick="location.reload()">VOLVER</button>
 </div>
 
 <canvas id="game"></canvas>
@@ -372,8 +276,7 @@ import {
 getFirestore,
 doc,
 setDoc,
-getDoc,
-updateDoc
+getDoc
 }
 from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
 
@@ -396,20 +299,31 @@ const ctx=canvas.getContext('2d')
 canvas.width=innerWidth
 canvas.height=innerHeight
 
-const player={
-x:0,
-y:0,
-speed:0,
-slip:0,
-lava:false,
-name:'PLAYER'
+const screens={
+auth:authScreen,
+menu:menuScreen
+}
+
+function show(name){
+Object.values(screens)
+.forEach(s=>s.classList.add('hidden'))
+
+screens[name].classList.remove('hidden')
 }
 
 const state={
 coins:0,
-skin:'normal',
-game:false,
-timer:150
+timer:150,
+game:false
+}
+
+const player={
+name:'PLAYER',
+x:0,
+y:0,
+speed:0,
+slip:0,
+lava:false
 }
 
 const keys={}
@@ -437,16 +351,15 @@ await setDoc(
 doc(db,'users',cred.user.uid),
 {
 name:nameInput.value,
-coins:0,
-skin:'normal'
+coins:0
 }
 )
 
 alert('Cuenta creada')
 
-}catch(e){
+}catch(err){
 
-alert(e.message)
+alert(err.message)
 
 }
 
@@ -474,98 +387,45 @@ const d=snap.data()
 
 player.name=d.name
 state.coins=d.coins||0
-state.skin=d.skin||'normal'
 
 }
 
 coins.innerHTML='🧊 '+state.coins
 
-authScreen.classList.add('hidden')
-menuScreen.classList.remove('hidden')
+show('menu')
 
-}catch(e){
+}catch(err){
 
-alert('Error login')
-
-}
+alert(err.message)
 
 }
-
-customBtn.onclick=()=>{
-skins.style.display='block'
-}
-
-window.closeSkins=()=>{
-skins.style.display='none'
-}
-
-window.equipSkin=async(s)=>{
-
-state.skin=s
-
-alert('Skin equipada')
-
-}
-
-window.buySkin=async(name,price)=>{
-
-if(state.coins<price){
-alert('No tienes cubos')
-return
-}
-
-state.coins-=price
-state.skin=name
-
-coins.innerHTML='🧊 '+state.coins
-
-alert('Comprada')
 
 }
 
 publicBtn.onclick=startGame
 trainingBtn.onclick=startGame
 
-privateBtn.onclick=()=>{
-menuScreen.classList.add('hidden')
-privateScreen.classList.remove('hidden')
-}
-
-createRoomBtn.onclick=()=>{
-roomCode.innerHTML='ROOM'
-privateScreen.classList.add('hidden')
-roomScreen.classList.remove('hidden')
-}
-
-joinRoomBtn.onclick=()=>{
-privateScreen.classList.add('hidden')
-roomScreen.classList.remove('hidden')
-}
-
-startBtn.onclick=startGame
-
 function startGame(){
 
 state.game=true
 
-menuScreen.classList.add('hidden')
-privateScreen.classList.add('hidden')
-roomScreen.classList.add('hidden')
+Object.values(screens)
+.forEach(s=>s.classList.add('hidden'))
 
 topUI.classList.remove('hidden')
 chat.classList.remove('hidden')
 
 }
 
-const pathWidth=95
+const pathWidth=70
 
 const cubes=[]
 
-for(let i=0;i<100;i++){
+for(let i=0;i<120;i++){
 
 cubes.push({
-x:(Math.random()-.5)*70,
-y:-i*220,
+x:(Math.random()-.5)*50,
+y:-i*180,
 taken:false
 })
 
@@ -573,11 +433,11 @@ taken:false
 
 const lavaPenguins=[]
 
-for(let i=0;i<6;i++){
+for(let i=0;i<8;i++){
 
 lavaPenguins.push({
 side:Math.random()>.5?1:-1,
-y:-Math.random()*5000,
+y:-Math.random()*6000,
 jump:0,
 jumping:false
 })
@@ -586,7 +446,7 @@ jumping:false
 
 const train={
 active:false,
-y:3000
+y:0
 }
 
 setInterval(()=>{
@@ -595,17 +455,41 @@ if(state.game&&!train.active){
 
 train.active=true
 
-train.y=player.y+2200
+train.y=player.y+2500
 
 alert.style.display='block'
 
 setTimeout(()=>{
 alert.style.display='none'
-},2500)
+},2000)
 
 }
 
-},28000)
+},25000)
+
+function cubeAnim(){
+
+const div=document.createElement('div')
+
+div.className='cubeAnim'
+
+div.innerHTML='🧊 +1'
+
+document.body.appendChild(div)
+
+setTimeout(()=>{
+div.remove()
+},1000)
+
+}
+
+function die(){
+
+player.lava=true
+
+deathScreen.style.display='flex'
+
+}
 
 function update(){
 
@@ -613,8 +497,8 @@ if(!state.game)return
 
 if(keys['shift']){
 
-player.speed=3.2
-player.slip+=0.45
+player.speed=3.4
+player.slip+=0.4
 
 }else if(
 keys['w']||
@@ -623,12 +507,12 @@ keys['d']
 ){
 
 player.speed=2
-player.slip+=0.12
+player.slip+=0.1
 
 }else{
 
 player.speed=0
-player.slip-=0.4
+player.slip-=0.35
 
 }
 
@@ -640,32 +524,30 @@ Math.min(100,player.slip)
 
 if(player.slip>=100){
 
-player.lava=true
+die()
 
 }
 
 if(keys['a'])player.x-=player.speed
 if(keys['d'])player.x+=player.speed
-if(keys['w'])player.y-=2
+if(keys['w'])player.y-=2.2
 
-if(!player.lava){
+if(
+player.x<-pathWidth/2||
+player.x>pathWidth/2
+){
 
-player.x=
-Math.max(
--pathWidth/2,
-Math.min(pathWidth/2,player.x)
-)
+die()
 
 }
 
 lavaPenguins.forEach(lp=>{
 
-lp.y+=2.2
+lp.y+=2.5
 
 if(
-lp.y>player.y-250&&
-lp.y<player.y+250&&
-!lp.jumping
+Math.abs(lp.y-player.y)<240
+&&!lp.jumping
 ){
 
 lp.jumping=true
@@ -679,27 +561,26 @@ lp.jump-=2
 
 if(lp.jump<=0){
 
-lp.jumping=false
 lp.jump=0
+lp.jumping=false
 
 }
 
 }
 
 const lavaX=
-(pathWidth/2+55)*lp.side
-
-const dx=player.x-lavaX
-const dy=player.y-lp.y
+(pathWidth/2+85)*lp.side
 
 if(
-Math.abs(dx)<55&&
-Math.abs(dy)<55&&
+Math.abs(player.x-lavaX)<55
+&&
+Math.abs(player.y-lp.y)<55
+&&
 lp.jumping
 ){
 
 player.x+=lp.side*20
-player.slip+=25
+player.slip+=15
 
 }
 
@@ -709,20 +590,27 @@ if(train.active){
 
 train.y-=3
 
-const trainHit=
-Math.abs(train.y-player.y)<80
+if(
+train.y<player.y+100
+&&
+train.y>player.y-100
+){
 
-const trainSide=
-Math.abs(player.x)<55
+if(
+player.x>-40
+&&player.x<40
+){
 
-if(trainHit&&trainSide){
+die()
 
-player.lava=true
+}
 
 }
 
 if(train.y<player.y-3000){
+
 train.active=false
+
 }
 
 }
@@ -735,7 +623,8 @@ const dx=player.x-c.x
 const dy=player.y-c.y
 
 if(
-Math.abs(dx)<20&&
+Math.abs(dx)<20
+&&
 Math.abs(dy)<20
 ){
 
@@ -746,11 +635,21 @@ state.coins++
 coins.innerHTML=
 '🧊 '+state.coins
 
+cubeAnim()
+
 }
 
 })
 
 state.timer-=1/60
+
+if(state.timer<=0){
+
+alert('GANASTE')
+
+location.reload()
+
+}
 
 const mins=
 Math.floor(state.timer/60)
@@ -768,25 +667,14 @@ player.slip+'%'
 
 }
 
-function drawPenguin(x,y,lava=false,skin='normal'){
+function drawPenguin(x,y,lava=false){
 
 ctx.save()
 
 ctx.translate(x,y)
 
-if(skin==='rich'){
-
-ctx.fillStyle='gold'
-
-}else if(skin==='zombie'){
-
-ctx.fillStyle='#6eff6e'
-
-}else{
-
-ctx.fillStyle=lava?'#ff4d00':'white'
-
-}
+ctx.fillStyle=
+lava?'#ff4d00':'white'
 
 ctx.beginPath()
 ctx.ellipse(0,0,16,22,0,0,6.28)
@@ -808,6 +696,7 @@ ctx.lineTo(4,7)
 ctx.fill()
 
 ctx.restore()
+
 }
 
 function draw(){
@@ -819,53 +708,68 @@ canvas.width,
 canvas.height
 )
 
-const sky=ctx.createLinearGradient(
-0,
-0,
-0,
-canvas.height
-)
+const cx=canvas.width/2
 
-sky.addColorStop(0,"#220000")
-sky.addColorStop(1,"#000000")
+for(let y=0;y<canvas.height;y+=40){
 
-ctx.fillStyle=sky
+ctx.fillStyle=
+`rgb(
+${180+Math.sin(Date.now()*0.002+y)*30},
+40,
+0
+)`
 
 ctx.fillRect(
 0,
-0,
+y,
 canvas.width,
-canvas.height
+40
 )
 
-for(let i=0;i<8;i++){
+}
 
-ctx.fillStyle="rgba(0,0,0,.25)"
+for(let i=0;i<80;i++){
+
+ctx.fillStyle=
+`rgba(255,${80+Math.random()*100},0,.35)`
 
 ctx.beginPath()
 
-ctx.moveTo(i*260,canvas.height)
-
-ctx.lineTo(i*260+120,canvas.height-250)
-
-ctx.lineTo(i*260+240,canvas.height)
+ctx.arc(
+(Math.sin(i*999)+1)*canvas.width/2,
+(Date.now()*0.05+i*80)%canvas.height,
+2+Math.random()*3,
+0,
+6.28
+)
 
 ctx.fill()
 
 }
 
-const cx=canvas.width/2
-
-ctx.fillStyle='#5b3418'
+ctx.fillStyle='#2b1308'
 
 ctx.beginPath()
 
 ctx.moveTo(cx-pathWidth/2,0)
 ctx.lineTo(cx+pathWidth/2,0)
-ctx.lineTo(cx+pathWidth/2+25,canvas.height)
-ctx.lineTo(cx-pathWidth/2-25,canvas.height)
+ctx.lineTo(cx+pathWidth/2+30,canvas.height)
+ctx.lineTo(cx-pathWidth/2-30,canvas.height)
 
 ctx.fill()
+
+for(let y=0;y<canvas.height;y+=50){
+
+ctx.fillStyle='rgba(255,255,255,.04)'
+
+ctx.fillRect(
+cx-pathWidth/2,
+y,
+pathWidth,
+20
+)
+
+}
 
 cubes.forEach(c=>{
 
@@ -885,7 +789,7 @@ ctx.beginPath()
 ctx.arc(
 cx+c.x,
 sy,
-10,
+9,
 0,
 6.28
 )
@@ -901,10 +805,10 @@ lp.y-player.y+
 canvas.height/2
 
 const lavaX=
-(pathWidth/2+55)*lp.side
+(pathWidth/2+85)*lp.side
 
 ctx.fillStyle=
-'rgba(255,80,0,.2)'
+'rgba(255,80,0,.3)'
 
 ctx.beginPath()
 
@@ -932,32 +836,32 @@ const ty=
 train.y-player.y+
 canvas.height/2
 
-ctx.fillStyle='#555'
+ctx.fillStyle='#444'
 
 ctx.fillRect(
-cx-55,
+cx-110,
 ty,
-110,
-140
+220,
+180
 )
 
 ctx.fillStyle='yellow'
 
-ctx.fillRect(cx-30,ty+35,25,25)
-ctx.fillRect(cx+5,ty+35,25,25)
+ctx.fillRect(cx-65,ty+35,35,35)
+ctx.fillRect(cx+30,ty+35,35,35)
 
 }
 
 const py=canvas.height-170
 
-ctx.fillStyle='rgba(0,0,0,.25)'
+ctx.fillStyle='rgba(0,0,0,.3)'
 
 ctx.beginPath()
 
 ctx.ellipse(
 cx+player.x,
-py+22,
-18,
+py+20,
+20,
 8,
 0,
 0,
@@ -978,8 +882,7 @@ py-30
 drawPenguin(
 cx+player.x,
 py,
-player.lava,
-state.skin
+player.lava
 )
 
 }
@@ -988,12 +891,34 @@ leaveBtn.onclick=()=>{
 location.reload()
 }
 
+chatInput.addEventListener('keydown',e=>{
+
+if(e.key==='Enter'){
+
+const div=
+document.createElement('div')
+
+div.innerHTML=
+`🐧 ${player.name}: ${chatInput.value}`
+
+chatMessages.appendChild(div)
+
+chatInput.value=''
+
+chatMessages.scrollTop=
+chatMessages.scrollHeight
+
+}
+
+})
+
 function loop(){
 
 update()
 draw()
 
 requestAnimationFrame(loop)
+
 }
 
 loop()
